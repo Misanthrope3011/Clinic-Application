@@ -2,11 +2,13 @@
 package com.example.demo1.Entities;
 
 
-import com.example.demo1.Entities.Doctor;
-import com.example.demo1.Entities.Patient;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 public class DoctorRatings {
 

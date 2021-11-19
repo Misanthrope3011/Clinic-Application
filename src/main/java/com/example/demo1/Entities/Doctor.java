@@ -1,8 +1,13 @@
 package com.example.demo1.Entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 public class Doctor {
 
@@ -13,10 +18,8 @@ public class Doctor {
     String name;
     String second_name;
     String last_name;
-
     @OneToMany(mappedBy = "id_column")
     List<Department> department_list;
-
 
     @OneToMany(mappedBy = "id")
     List<Specialization> doctor_specializations;
@@ -24,9 +27,11 @@ public class Doctor {
     @OneToMany(mappedBy = "id")
     List<MedicalVisit> patient_visits;
 
-
     @OneToMany(mappedBy = "id")
     List <DoctorRatings> doctor_ratings;
+
+    @OneToMany(mappedBy = "id")
+    List<WorkSchedule> work_schedule;
 
 
 }

@@ -1,9 +1,9 @@
 package com.example.demo1;
 
-import org.springframework.security.core.userdetails.User;
+import com.example.demo1.Entities.User;
 
 public interface UserInterface {
 
-    User registerNewUsserAccount();
+    User registerNewUsserAccount(com.example.demo1.Entities.User user);
 
 }

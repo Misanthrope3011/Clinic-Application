@@ -3,8 +3,13 @@
 package com.example.demo1.Entities;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 public class MedicalVisit {
 
@@ -16,11 +21,11 @@ public class MedicalVisit {
     String description;
 
     @ManyToOne
-    @JoinColumn(name = "XD", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor_id;
 
     @ManyToOne
-    @JoinColumn(name = "XD",referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "patient",referencedColumnName = "id", insertable = false, updatable = false)
     Patient patient_id;
 
 }

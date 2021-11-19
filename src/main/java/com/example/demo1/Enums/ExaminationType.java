@@ -1,5 +1,5 @@
 package com.example.demo1.Enums;
 
-public enum ExaminationType {
+public enum  ExaminationType {
     ORIDINAL, UNSUAL, CLASSICAL
 }

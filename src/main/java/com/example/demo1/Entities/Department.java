@@ -1,8 +1,13 @@
 
 package com.example.demo1.Entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 public class Department {
 
@@ -15,7 +20,7 @@ public class Department {
     String closing_hour;
 
     @ManyToOne
-    @JoinColumn(name ="id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name ="Sample", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor_departments;
 
 

@@ -2,11 +2,16 @@ package com.example.demo1.User;
 
 
 import com.example.demo1.Entities.User;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+
+@Getter
+@Setter
 public class UserPrincipal implements UserDetails {
 
     private User user;
@@ -22,22 +27,22 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return user.getEncoded_password();
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return user.getUsername();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return user.is_expired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return user.is_active();
     }
 
     @Override
