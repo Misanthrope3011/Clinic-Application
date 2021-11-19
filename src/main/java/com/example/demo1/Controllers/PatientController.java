@@ -17,9 +17,7 @@ public class PatientController {
 
     @PostMapping
     ResponseEntity<Patient> getFormVisitAppointment(@RequestBody Patient patient) {
-
         return ResponseEntity.ok(patientRepository.save(patient));
     }
-
 
 }

@@ -13,6 +13,7 @@ import com.example.demo1.Services.UserInfoService;
 import com.example.demo1.Services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +44,23 @@ public class Controller {
     PatientRepository patientRepository;
     BCryptPasswordEncoder bCryptPasswordEncoder;
     RoleRepository roleRepository;
+    NewsRepository newsRepository;
 
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getPageInfo() {
 
         return userInfoService.findAllUsers();
+    }
+
+
+    @GetMapping("/news")
+     public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
+
+
+        Integer size = newsRepository.findAll().size();
+
+        return ResponseEntity.ok(size);
     }
 
     ContactFormService contactFormService;
@@ -95,13 +107,13 @@ public class Controller {
 
         signUpRequest.setUserRole(UserRole.ROLE_PATIENT);
 
-        /*
+
       if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Username is already taken!"));
         }
-*/
+
         User user = new User(signUpRequest);
 
 

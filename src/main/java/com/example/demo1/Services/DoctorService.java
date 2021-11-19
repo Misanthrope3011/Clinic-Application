@@ -1,6 +1,7 @@
-package com.example.demo1.Repositories;
+package com.example.demo1.Services;
 
 import com.example.demo1.Entities.Doctor;
+import com.example.demo1.Repositories.DoctorRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

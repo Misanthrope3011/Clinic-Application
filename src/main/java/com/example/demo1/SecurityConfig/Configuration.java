@@ -41,7 +41,7 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .antMatchers("/patient/**").hasRole("PATIENT")
                 .antMatchers("/doctor/**").hasRole("DOCTOR")
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/organizer/**").hasRole("ORGANIZER")
+                .antMatchers("/receptionist/**").hasRole("RECEPTIONIST")
                 .anyRequest().authenticated()
                 .and()
                 .logout()
