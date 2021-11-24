@@ -1,10 +1,8 @@
 package com.example.demo1.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,8 +10,6 @@ import java.util.List;
 @Setter
 @Entity
 public class Patient {
-
-
 
     public Patient() {
         super();
@@ -42,7 +38,8 @@ public class Patient {
         this.postal_code = postal_code;
     }
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY)
