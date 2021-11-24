@@ -1,19 +1,23 @@
 package com.example.demo1.Controllers;
 
 import com.example.demo1.Entities.Patient;
+import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.PatientRepository;
-import com.sun.mail.iap.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/patient")
+@CrossOrigin("http://localhost:4200")
 public class PatientController {
 
     private PatientRepository patientRepository;
+
+    @GetMapping("/welcome")
+    ResponseEntity<ResponseMessages> checkAuthorities() {
+        return ResponseEntity.ok(new ResponseMessages("Siema"));
+    }
+
 
     @PostMapping
     ResponseEntity<Patient> getFormVisitAppointment(@RequestBody Patient patient) {

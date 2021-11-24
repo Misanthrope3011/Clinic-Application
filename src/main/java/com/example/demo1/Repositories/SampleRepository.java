@@ -12,7 +12,7 @@ public interface SampleRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    Boolean existsByUsername(String username);
+    Boolean existsByUsername(String email);
 
     Boolean existsByEmail(String email);
 }

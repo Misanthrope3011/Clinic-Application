@@ -7,13 +7,9 @@ import com.example.demo1.JWT.JWToken;
 import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.*;
-import com.example.demo1.Services.ContactFormService;
-import com.example.demo1.Services.UserDetailService;
-import com.example.demo1.Services.UserInfoService;
-import com.example.demo1.Services.UserService;
+import com.example.demo1.Services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +19,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.management.relation.RoleNotFoundException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,25 +45,22 @@ public class Controller {
     BCryptPasswordEncoder bCryptPasswordEncoder;
     RoleRepository roleRepository;
     NewsRepository newsRepository;
-
+    ContactFormService contactFormService;
+    ExaminationService examinationService;
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> getPageInfo() {
+    public ResponseEntity<List<User>> getPageInfo() {
 
-        return userInfoService.findAllUsers();
+        return ResponseEntity.ok(userInfoService.findAllUsers());
     }
-
 
     @GetMapping("/news")
      public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
-
 
         Integer size = newsRepository.findAll().size();
 
         return ResponseEntity.ok(size);
     }
-
-    ContactFormService contactFormService;
 
     @Autowired
     SampleRepository userRepository;
@@ -77,12 +74,16 @@ public class Controller {
     @Autowired
     JWToken jwtUtils;
 
+    @GetMapping("/prices")
+    public ResponseEntity<HashMap<String, Double>> getExaminations() {
+        return examinationService.getExaminations();
+    }
+
+
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody Credentials loginRequest) {
-
-
-      Collection <? extends GrantedAuthority> grantedAuthority = Collections.singleton(new SimpleGrantedAuthority("USER"));
-
+/*
+c
        Authentication authentication = authenticationManager.authenticate(
                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword(), grantedAuthority));
 
@@ -92,55 +93,76 @@ public class Controller {
         User userDetails = (User) authentication.getPrincipal();
 
         List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+ */
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+
+        User userDetails = (User) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+                return ResponseEntity.ok(new LoginResponse(jwt,
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        List.of(userDetails.getAuthorities().toString())));
 
-        return ResponseEntity.ok(new LoginResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                roles));
     }
 
     @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) {
 
-        signUpRequest.setUserRole(UserRole.ROLE_PATIENT);
 
-
-      if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+      if (userRepository.existsByUsername(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Username is already taken!"));
+                    .body(new MessageResponse("Email is already taken!"));
         }
 
-        User user = new User(signUpRequest);
 
 
-        String strRoles = String.valueOf(signUpRequest.getUserRole());
-        Set<Role> roles = new HashSet<>();
+        if(signUpRequest.getEmail() != null) {
 
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(UserRole.ROLE_PATIENT)
-                    .orElseThrow(() -> new RuntimeException("Role is not found. 0"));
+            User user = new User(signUpRequest);
+            user.setEncoded_password(bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
+            user.setUsername(signUpRequest.getEmail());
+            String strRoles = String.valueOf(signUpRequest.getUserRole());
+            Set<Role> roles = new HashSet<>();
 
-        } else {
-            switch (strRoles) {
-                case "ROLE_ADMIN":
-                    user.setUserRole(UserRole.ROLE_ADMIN);
-                    break;
-                case "ROLE_DIRECTOR":
-                    user.setUserRole(UserRole.ROLE_DIRECTOR);
-                    break;
-                case "ROLE_PATIENT":
-                    user.setUserRole(UserRole.ROLE_PATIENT);
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(UserRole.ROLE_PATIENT)
+                        .orElseThrow(() -> new RuntimeException("Role is not found. 0"));
 
+            } else {
+                switch (strRoles) {
+                    case "ROLE_ADMIN":
+                        user.setUserRole(UserRole.ROLE_ADMIN);
+                        break;
+                    case "ROLE_DIRECTOR":
+                        user.setUserRole(UserRole.ROLE_DIRECTOR);
+                        break;
+                    case "ROLE_PATIENT":
+                        user.setUserRole(UserRole.ROLE_PATIENT);
+                        break;
+                    case "ROLE_DOCTOR":
+                        user.setUserRole(UserRole.ROLE_DOCTOR);
+                        break;
+                    default:
+                        return ResponseEntity.badRequest().body("User has to contain role");
+
+                }
             }
+            userRepository.save(user);
+            return ResponseEntity.ok(user);
         }
-
-        userRepository.save(user);
-
-        return ResponseEntity.ok(signUpRequest);
+        return ResponseEntity.ok("Email pojebalo");
     }
 
 
@@ -161,6 +183,11 @@ public class Controller {
         return new ResponseEntity<>(patientRepository.save(patient), HttpStatus.OK);
     }
 
+    @GetMapping("/savePatient")
+    public ResponseEntity<List<Patient>> hello() {
+        return ResponseEntity.ok(patientRepository.findAll());
+    }
+
     @GetMapping("/signUp")
     ResponseEntity<VerificationToken>  newUser(@RequestParam ("token") String token) {
         VerificationToken findUserToken = tokenRepository.findByToken(token);
@@ -174,12 +201,6 @@ public class Controller {
         return new ResponseEntity<VerificationToken>( findUserToken, HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}")
-    User one(@PathVariable Long id) {
-
-        return sampleRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-    }
 
     @GetMapping("/findAll")
     List<User> findAll() {

@@ -22,17 +22,12 @@ public class User implements UserDetails {
     Long id;
 
     String username;
-    @JsonIgnore
     String encoded_password;
     String sign_up_date;
     String email;
     boolean is_expired;
     boolean is_active;
     UserRole userRole;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patients", referencedColumnName = "id")
-    private List<Patient> patients;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
@@ -43,6 +38,7 @@ public class User implements UserDetails {
 
 
     public User(User user) {
+        this.email = user.email;
         this.is_active = user.is_active;
         this.encoded_password = user.encoded_password;
         this.sign_up_date = user.sign_up_date;
@@ -53,7 +49,12 @@ public class User implements UserDetails {
     }
 
     public User() {
+        super();
     }
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user")
+    private Patient patient;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,7 +72,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !is_active();
+        return true;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return is_active;
+        return true;
     }
 
     @Override

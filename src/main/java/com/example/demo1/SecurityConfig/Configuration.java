@@ -1,6 +1,7 @@
 package com.example.demo1.SecurityConfig;
 
 
+import com.example.demo1.JWT.AuthEntryPointJwt;
 import com.example.demo1.JWT.JWTAuth;
 import com.example.demo1.Services.UserDetailService;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,10 +32,12 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
     @Autowired
     UserDetailService userDetailsService;
 
+    @Autowired
+    AuthEntryPointJwt unauthorizedRequest;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+     /*  http.csrf().disable()
                 .cors()
                 .disable()
                 .authorizeRequests()
@@ -46,10 +50,23 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .and()
                 .logout()
                 .permitAll();
+*/
 
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                http.cors().and().csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedRequest).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests().antMatchers("/signIn").permitAll()
+                .antMatchers("/signUp", "/contact", "/prices", "/findAll","/savePatient", "/saveReceptionist", "/saveDoctor").permitAll()
+                        .antMatchers("/admin/**").hasRole("ADMIN")
+                        .antMatchers("/patient/**").hasRole("PATIENT")
+                        .antMatchers("/doctor/**").hasRole("DOCTOR")
+                        .antMatchers("receptionist/**").hasRole("RECEPTIONIST")
+                .anyRequest().authenticated();
+
+                http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
+
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -89,10 +106,6 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
 
         return mailSender;
     }
-
-
-
-
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
