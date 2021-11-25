@@ -1,6 +1,7 @@
 package com.example.demo1.Controllers;
 
 import com.example.demo1.*;
+import com.example.demo1.DTOs.PatientDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Enums.UserRole;
 import com.example.demo1.JWT.JWToken;
@@ -159,7 +160,7 @@ c
                 }
             }
             userRepository.save(user);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(userDetailService.loadUserByUsername(user.getEmail()));
         }
         return ResponseEntity.ok("Email pojebalo");
     }
@@ -178,8 +179,23 @@ c
     }
 
     @PostMapping("/savePatient")
-    public ResponseEntity<Patient> hello(@RequestBody Patient patient) {
-        return new ResponseEntity<>(patientRepository.save(patient), HttpStatus.OK);
+    public ResponseEntity hello(@RequestBody PatientDTO patient) {
+
+        Patient patientEntity = new Patient();
+        patientEntity.setUser(sampleRepository.findById(patient.getUser_id()).orElse(null));
+        patientEntity.setCity(patient.getCity());
+        patientEntity.setName(patient.getName());
+        patientEntity.setHome_number(patient.getHome_number());
+        patientEntity.setPESEL(patient.getPESEL());
+        patientEntity.setPostal_code(patient.getPostal_code());
+        patientEntity.setLast_name(patient.getLast_name());
+
+        if(patientEntity.getUser() != null) {
+            patientRepository.save(patientEntity);
+
+            return new ResponseEntity<Patient>(patientEntity, HttpStatus.OK);
+        }
+        return ResponseEntity.badRequest().body("Nie znaleziono powiazanego Usera");
     }
 
     @GetMapping("/savePatient")

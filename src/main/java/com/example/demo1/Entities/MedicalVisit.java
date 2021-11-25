@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,15 +18,16 @@ public class MedicalVisit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String visit_date;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
     String description;
 
     @ManyToOne
-    @JoinColumn(name = "doctor", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor_id;
 
     @ManyToOne
-    @JoinColumn(name = "patient",referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "patient_id",referencedColumnName = "id", insertable = false, updatable = false)
     Patient patient_id;
 
 }

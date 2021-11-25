@@ -18,7 +18,7 @@ public class Specialization {
     String specialization_name;
 
     @ManyToOne
-    @JoinColumn(name = "XD", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor_id;
 
 

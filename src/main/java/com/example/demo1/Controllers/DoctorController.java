@@ -2,6 +2,7 @@ package com.example.demo1.Controllers;
 
 import com.example.demo1.Entities.ContactForm;
 import com.example.demo1.Entities.Doctor;
+import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Services.ContactFormService;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.Doc;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,9 +32,20 @@ public class DoctorController {
     @PutMapping("doctor/edit/{id}")
     ResponseEntity<Doctor> updateDoctorInfo(@RequestBody Doctor doctorToEdit, @PathVariable Integer id, @RequestParam String attributeToChange) {
 
-
-
         return ResponseEntity.ok(doctorToEdit);
+    }
+
+    @GetMapping("doctor/pendingVisits")
+    ResponseEntity getPendingVisits(@RequestParam Long id) {
+
+        Doctor doctor = doctorRepository.findById(id).orElse(null);
+
+        if(doctor != null) {
+            return ResponseEntity.ok((ArrayList<MedicalVisit>) doctor.getPatient_visits());
+        }
+
+        return ResponseEntity.badRequest().body("Nie znaleziono doktora");
+
     }
 
     @GetMapping("/contactForm")

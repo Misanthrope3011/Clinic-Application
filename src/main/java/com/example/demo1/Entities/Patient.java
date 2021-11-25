@@ -39,11 +39,11 @@ public class Patient {
     }
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ratings", referencedColumnName = "id")
+    @JoinColumn(name = "ratings_id", referencedColumnName = "id")
     private List<DoctorRatings> ratings_by_patient;
 
 

@@ -20,7 +20,7 @@ public class Department {
     String closing_hour;
 
     @ManyToOne
-    @JoinColumn(name ="Sample", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name ="doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor_departments;
 
 

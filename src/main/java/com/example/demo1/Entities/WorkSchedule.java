@@ -12,7 +12,7 @@ public class WorkSchedule {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", insertable = false, updatable = false)
     Doctor doctorsSchedule;
 
     private Date day;

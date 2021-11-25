@@ -20,11 +20,11 @@ public class DoctorRatings {
     String rating_explanation;
 
     @ManyToOne
-    @JoinColumn(name = "XD", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
     Doctor doctor;
 
     @ManyToOne
-    @JoinColumn(name = "XD", referencedColumnName = "id",insertable = false, updatable = false)
+    @JoinColumn(name = "patient_id", referencedColumnName = "id",insertable = false, updatable = false)
     Patient patient;
 
 }
