@@ -1,6 +1,7 @@
 package com.example.demo1.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -38,6 +39,7 @@ public class Patient {
         this.postal_code = postal_code;
     }
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;

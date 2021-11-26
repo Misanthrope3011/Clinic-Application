@@ -52,7 +52,6 @@ public class User implements UserDetails {
         super();
     }
 
-    @JsonIgnore
     @OneToOne(mappedBy = "user")
     private Patient patient;
 
