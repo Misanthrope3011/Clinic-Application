@@ -58,6 +58,7 @@ public class Controller {
     @GetMapping("/news")
      public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
 
+
         Integer size = newsRepository.findAll().size();
 
         return ResponseEntity.ok(size);
@@ -112,7 +113,7 @@ c
                         userDetails.getId(),
                         userDetails.getUsername(),
                         userDetails.getEmail(),
-                        List.of(userDetails.getAuthorities().toString())));
+                       roles));
 
     }
 
@@ -188,6 +189,7 @@ c
         patientEntity.setHome_number(patient.getHome_number());
         patientEntity.setPESEL(patient.getPESEL());
         patientEntity.setPostal_code(patient.getPostal_code());
+        patientEntity.setStreet(patient.getStreet());
         patientEntity.setLast_name(patient.getLast_name());
 
         if(patientEntity.getUser() != null) {

@@ -51,8 +51,6 @@ public class JWTAuth extends OncePerRequestFilter {
     }
 
 
-
-
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
 

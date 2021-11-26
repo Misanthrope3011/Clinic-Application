@@ -10,11 +10,11 @@ import java.io.FileOutputStream;
 public class PDFWriter {
 
 
-    com.itextpdf.text.Document document;
 /*
     public PDFWriter() throws FileNotFoundException {
         this.document = new Document();
         PdfWriter.getInstance(document, new FileOutputStream("iTextHelloWorld.pdf"));
     }
-  */
+*/
+
     }
