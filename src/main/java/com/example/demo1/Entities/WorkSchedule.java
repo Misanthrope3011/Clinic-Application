@@ -2,7 +2,6 @@ package com.example.demo1.Entities;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 public class WorkSchedule {
@@ -12,13 +11,11 @@ public class WorkSchedule {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id", insertable = false, updatable = false)
-    Doctor doctorsSchedule;
+    @JoinColumn(name = "doctor_id")
+    Doctor doctor;
 
     private Date day;
     private String start_hour;
     private String end_hour;
-
-
 
 }

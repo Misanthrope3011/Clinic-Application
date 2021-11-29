@@ -9,6 +9,7 @@ import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.*;
 import com.example.demo1.Services.*;
+import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,11 +49,28 @@ public class Controller {
     NewsRepository newsRepository;
     ContactFormService contactFormService;
     ExaminationService examinationService;
+    SpecializationRepository specializationRepository;
+    SampleRepository userRepository;
+    UserDetailService userDetailService;
+    PasswordEncoder encoder;
+    JWToken jwtUtils;
+
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<User>> getPageInfo() {
 
         return ResponseEntity.ok(userInfoService.findAllUsers());
+    }
+
+    @GetMapping("/getAllPatients")
+    public ResponseEntity<List<Patient>> getAllPatient() {
+
+        return ResponseEntity.ok(patientRepository.findAll());
+    }
+
+    @GetMapping("/getSpecializationList")
+    public ResponseEntity<List<Specialization>> getSpecializations() {
+        return ResponseEntity.ok(specializationRepository.findAll());
     }
 
     @GetMapping("/news")
@@ -61,20 +79,11 @@ public class Controller {
 
         Integer size = newsRepository.findAll().size();
 
-        return ResponseEntity.ok(size);
+        List<News> newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
+
+        return ResponseEntity.ok(newsOnRequestedPage);
     }
 
-    @Autowired
-    SampleRepository userRepository;
-
-    @Autowired
-    UserDetailService userDetailService;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JWToken jwtUtils;
 
     @GetMapping("/prices")
     public ResponseEntity<HashMap<String, Double>> getExaminations() {
@@ -82,10 +91,11 @@ public class Controller {
     }
 
 
+
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody Credentials loginRequest) {
 /*
-c
+
        Authentication authentication = authenticationManager.authenticate(
                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword(), grantedAuthority));
 
@@ -109,25 +119,34 @@ c
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-                return ResponseEntity.ok(new LoginResponse(jwt,
-                        userDetails.getId(),
-                        userDetails.getUsername(),
-                        userDetails.getEmail(),
-                       roles));
-
+        if(roles.get(0).equals("ROLE_PATIENT")) {
+            return ResponseEntity.ok(new LoginResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    userDetails.getPatient(),
+                    roles));
+        } else if(roles.get(0).equals("ROLE_DOCTOR")) {
+            return ResponseEntity.ok(new LoginResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    userDetails.getDoctor(),
+                    roles));
+        }
+        return ResponseEntity.badRequest().body("Nie znaleziono odpowiedniej roli");
     }
 
     @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) {
 
 
-      if (userRepository.existsByUsername(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Email is already taken!"));
-        }
+          if (userRepository.existsByUsername(signUpRequest.getEmail())) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new MessageResponse("Email is already taken!"));
 
-
+          }
 
         if(signUpRequest.getEmail() != null) {
 
@@ -135,7 +154,6 @@ c
             user.setEncoded_password(bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
             user.setUsername(signUpRequest.getEmail());
             String strRoles = String.valueOf(signUpRequest.getUserRole());
-            Set<Role> roles = new HashSet<>();
 
             if (strRoles == null) {
                 Role userRole = roleRepository.findByName(UserRole.ROLE_PATIENT)

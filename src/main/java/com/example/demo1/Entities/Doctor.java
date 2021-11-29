@@ -1,5 +1,6 @@
 package com.example.demo1.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,13 +19,16 @@ public class Doctor {
     String name;
     String second_name;
     String last_name;
-    @OneToMany(mappedBy = "id_column")
-    List<Department> department_list;
 
-    @OneToMany(mappedBy = "id")
-    List<Specialization> doctor_specializations;
+    @JoinColumn(name = "deparment_id", insertable = false, updatable = false)
+    @ManyToOne
+    Department doctor_department;
 
-    @OneToMany(mappedBy = "id")
+    @ManyToOne
+    @JoinColumn(name = "specialization_id", referencedColumnName = "id")
+    Specialization doctor_specialization;
+
+    @OneToMany(mappedBy = "doctor_id")
     List<MedicalVisit> patient_visits;
 
     @OneToMany(mappedBy = "id")
@@ -32,6 +36,13 @@ public class Doctor {
 
     @OneToMany(mappedBy = "id")
     List<WorkSchedule> work_schedule;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "my_id", referencedColumnName = "id")
+    private User user;
+
+
 
 
 }

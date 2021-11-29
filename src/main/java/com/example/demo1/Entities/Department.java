@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,10 +19,13 @@ public class Department {
     String name;
     String opening_hour;
     String closing_hour;
+    String city;
+    String street;
+    String homeNumber;
 
-    @ManyToOne
-    @JoinColumn(name ="doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
-    Doctor doctor_departments;
+    @OneToMany(mappedBy = "doctor_department")
+    List<Doctor> department_stuff;
+
 
 
 }

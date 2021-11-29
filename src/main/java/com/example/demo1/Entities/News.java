@@ -22,3 +22,5 @@ public class News {
     String content;
     LocalDateTime timeOfCreation;
 }
+
+

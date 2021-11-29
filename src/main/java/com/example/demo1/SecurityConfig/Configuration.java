@@ -57,6 +57,7 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/signIn").permitAll()
                 .antMatchers("/signUp","/contact", "/prices", "/findAll","/savePatient", "/saveReceptionist", "/saveDoctor").permitAll()
+                        .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/patient/**").hasRole("PATIENT")
                         .antMatchers("/doctor/**").hasRole("DOCTOR")

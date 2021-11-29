@@ -13,6 +13,7 @@ public class VisitDTO {
 
     private Long patient_id;
     private Long doctor_id;
-    private LocalDateTime visit_start;
-    private LocalDateTime visit_end;
+    private String visit_start;
+    private String visit_end;
+    private String description;
 }

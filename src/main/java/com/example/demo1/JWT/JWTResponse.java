@@ -7,7 +7,6 @@ import java.util.List;
 public class JWTResponse {
 
     private String token;
-    private String type = "Basic";
     private String username;
     private String password;
     private List<String> roles;

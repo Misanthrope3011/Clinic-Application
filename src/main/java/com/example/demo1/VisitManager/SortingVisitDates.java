@@ -6,7 +6,6 @@ import com.example.demo1.Repositories.DoctorRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -19,13 +18,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SortingDates {
+public class SortingVisitDates {
 
     @Autowired
     private DoctorRepository doctorRepository;
     private Doctor doctor;
 
-    public boolean isEmptyDate(int doctorId, LocalDateTime visitDate) {
+    public boolean isDateAvailable(int doctorId, LocalDateTime visitDate) {
         ArrayList<MedicalVisit> getAllDoctorVisits = (ArrayList<MedicalVisit>) doctorRepository.findAll().get(doctorId).getPatient_visits();
 
         ArrayList<LocalDateTime> sortedDoctorSchedule = (ArrayList<LocalDateTime>) getAllDoctorVisits.stream().map(MedicalVisit::getStartDate).sorted().collect(Collectors.toList());

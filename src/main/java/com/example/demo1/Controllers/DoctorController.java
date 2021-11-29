@@ -1,17 +1,21 @@
 package com.example.demo1.Controllers;
 
-import com.example.demo1.Entities.ContactForm;
-import com.example.demo1.Entities.Doctor;
-import com.example.demo1.Entities.MedicalVisit;
+import com.example.demo1.Entities.*;
+import com.example.demo1.MessageResponse;
 import com.example.demo1.Repositories.DoctorRepository;
+import com.example.demo1.Repositories.PatientRepository;
+import com.example.demo1.Repositories.SampleRepository;
 import com.example.demo1.Services.ContactFormService;
+import javassist.tools.rmi.Sample;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -20,23 +24,34 @@ import java.util.List;
 public class DoctorController {
 
     @Autowired
+    private SampleRepository sampleRepository;
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
+    private PatientRepository patientRepository;
+    @DeleteMapping("deletePatient/{id}")
+    ResponseEntity deleteDoctor(@PathVariable Long id) {
+        Patient patient = Objects.requireNonNull(patientRepository.findById(id).orElse(null));
 
-    @DeleteMapping("doctor/delete/{id}")
-    ResponseEntity<Doctor> deleteDoctor(@PathVariable Integer id) {
+        patientRepository.deleteById(Objects.requireNonNull(patientRepository.findById(patient.getId())
+                .map(Patient::getId).orElse(null)));
+       // sampleRepository.deleteById(id);
+        return ResponseEntity.ok("Usunieto");
+    }
+
+    @PutMapping("editPatient/{id}")
+    ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {
         Doctor doctorToDelete = doctorRepository.findById(id.longValue()).orElseThrow();
         doctorRepository.delete(doctorToDelete);
         return ResponseEntity.ok(doctorToDelete);
     }
 
-    @PutMapping("doctor/edit/{id}")
+    @PutMapping("edit/{id}")
     ResponseEntity<Doctor> updateDoctorInfo(@RequestBody Doctor doctorToEdit, @PathVariable Integer id, @RequestParam String attributeToChange) {
 
         return ResponseEntity.ok(doctorToEdit);
     }
 
-    @GetMapping("doctor/pendingVisits")
+    @GetMapping("/pendingVisits")
     ResponseEntity getPendingVisits(@RequestParam Long id) {
 
         Doctor doctor = doctorRepository.findById(id).orElse(null);

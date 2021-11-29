@@ -23,11 +23,11 @@ public class MedicalVisit {
     String description;
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     Doctor doctor_id;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id",referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "patient_id",referencedColumnName = "id")
     Patient patient_id;
 
 }

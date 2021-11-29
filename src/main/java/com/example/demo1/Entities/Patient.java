@@ -4,6 +4,8 @@ package com.example.demo1.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class Patient {
     Long id;
 
     private String name;
+    private String second_name;
     private String last_name;
     private String PESEL;
     private String city;
@@ -40,7 +43,7 @@ public class Patient {
     }
 
     @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
 
@@ -48,6 +51,8 @@ public class Patient {
     @JoinColumn(name = "ratings_id", referencedColumnName = "id")
     private List<DoctorRatings> ratings_by_patient;
 
+    @OneToMany(mappedBy = "patient_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MedicalVisit> patients;
 
 
 }

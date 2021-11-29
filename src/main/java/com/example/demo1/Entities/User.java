@@ -52,8 +52,11 @@ public class User implements UserDetails {
         super();
     }
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user")
     private Patient patient;
+
+    @OneToOne(mappedBy = "user")
+    private Doctor doctor;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

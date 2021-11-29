@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,9 +18,8 @@ public class Specialization {
 
     String specialization_name;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
-    Doctor doctor_id;
+    @OneToMany(mappedBy = "doctor_specialization")
+    List<Doctor> doctor_id;
 
 
 
