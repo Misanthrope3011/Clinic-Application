@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.relation.RoleNotFoundException;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -204,7 +205,7 @@ public class Controller {
 
     @PostMapping("/contact")
     ResponseEntity <ContactForm> saveContactForm(@RequestBody ContactForm contactForm) {
-
+        contactForm.setDate(LocalDateTime.now());
         return contactFormService.addNewContactForm(contactForm);
     }
 
