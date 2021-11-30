@@ -52,7 +52,7 @@ public class Patient {
     private List<DoctorRatings> ratings_by_patient;
 
     @OneToMany(mappedBy = "patient_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MedicalVisit> patients;
+    private List<MedicalVisit> visits;
 
 
 }

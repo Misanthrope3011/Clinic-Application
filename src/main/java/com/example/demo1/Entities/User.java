@@ -55,7 +55,7 @@ public class User implements UserDetails {
     @OneToOne (fetch = FetchType.LAZY, mappedBy = "user")
     private Patient patient;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private Doctor doctor;
 
     @Override

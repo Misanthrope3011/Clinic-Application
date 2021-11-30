@@ -1,6 +1,7 @@
 
 package com.example.demo1.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class Specialization {
 
     String specialization_name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "doctor_specialization")
     List<Doctor> doctor_id;
 

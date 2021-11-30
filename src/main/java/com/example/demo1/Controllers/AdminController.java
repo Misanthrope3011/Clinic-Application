@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/admin")
+@CrossOrigin("http://localhost:4200")
 @RestController
 @AllArgsConstructor
 public class AdminController {
@@ -31,12 +34,14 @@ public class AdminController {
 
     @PostMapping("/addNews")
     public ResponseEntity<News> entity(@RequestBody News news) {
+        news.setTimeOfCreation(LocalDateTime.now());
         newsRepository.save(news);
         return ResponseEntity.ok(news);
     }
 
     @GetMapping("/findAllDoctors")
     public ResponseEntity<List<Doctor>> findAll() {
+
         return ResponseEntity.ok(doctorRepository.findAll());
     }
 

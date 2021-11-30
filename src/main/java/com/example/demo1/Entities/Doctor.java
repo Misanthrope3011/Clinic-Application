@@ -20,7 +20,8 @@ public class Doctor {
     String second_name;
     String last_name;
 
-    @JoinColumn(name = "deparment_id", insertable = false, updatable = false)
+    @JsonIgnore
+    @JoinColumn(name = "deparment_id")
     @ManyToOne
     Department doctor_department;
 
@@ -34,16 +35,13 @@ public class Doctor {
     @OneToMany(mappedBy = "id")
     List <DoctorRatings> doctor_ratings;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "doctor")
     List<WorkSchedule> work_schedule;
 
     @JsonIgnore
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
-
-
-
 
 }
 

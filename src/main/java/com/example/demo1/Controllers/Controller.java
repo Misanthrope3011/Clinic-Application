@@ -44,6 +44,7 @@ public class Controller {
     UserService userService;
     TokenRepository tokenRepository;
     PatientRepository patientRepository;
+    DoctorRepository doctorRepository;
     BCryptPasswordEncoder bCryptPasswordEncoder;
     RoleRepository roleRepository;
     NewsRepository newsRepository;
@@ -72,15 +73,29 @@ public class Controller {
     public ResponseEntity<List<Specialization>> getSpecializations() {
         return ResponseEntity.ok(specializationRepository.findAll());
     }
+    @GetMapping("/createDoctors")
+    public ResponseEntity setDoctor() {
+        User user = new User();
+        user.setUserRole(UserRole.ROLE_DOCTOR);
+        user.setEmail("doctorq@doctor.com");
+        user.setEncoded_password(bCryptPasswordEncoder.encode("samplePassword"));
+        Doctor doctor = new Doctor();
+        sampleRepository.save(user);
+        doctor.setUser(user);
+        doctorRepository.save(doctor);
+        return ResponseEntity.ok("Mordo mondo");
+    }
 
     @GetMapping("/news")
      public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
 
+        List<News> newsOnRequestedPage = new ArrayList<>();
+        page = page - 1;
 
         Integer size = newsRepository.findAll().size();
-
-        List<News> newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
-
+        if(size > newsLimitOnSinglePage * (page + 1))
+            newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
+        else    newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, size);
         return ResponseEntity.ok(newsOnRequestedPage);
     }
 
@@ -133,6 +148,8 @@ public class Controller {
                     userDetails.getEmail(),
                     userDetails.getDoctor(),
                     roles));
+        } else if (roles.get(0).equals("ROLE_ADMIN")) {
+            return ResponseEntity.ok(new LoginResponse(jwt, "ADMIN", roles));
         }
         return ResponseEntity.badRequest().body("Nie znaleziono odpowiedniej roli");
     }
@@ -240,5 +257,10 @@ public class Controller {
     @GetMapping("/findAll")
     List<User> findAll() {
         return sampleRepository.findAll();
+    }
+
+    @GetMapping("/getSchedule")
+    ResponseEntity<Doctor> getHisWorkHours() {
+        return ResponseEntity.ok(doctorRepository.findById((long)6).get());
     }
 }

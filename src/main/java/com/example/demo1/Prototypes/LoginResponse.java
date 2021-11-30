@@ -40,4 +40,10 @@ public class LoginResponse {
         this.doctor = doctor;
         this.roles = roles;
     }
+
+    public LoginResponse(String token, String email, List<String> roles) {
+        this.token = token;
+        this.email = email;
+        this.roles = roles;
+    }
 }
