@@ -51,12 +51,11 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .logout()
                 .permitAll();
 */
-
                 http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedRequest).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/signIn").permitAll()
-                .antMatchers("/signUp","/contact", "/prices", "/getSchedule", "/findAll","/savePatient", "/saveReceptionist", "/saveDoctor", "/createDoctors").permitAll()
+                .antMatchers("/signUp","/contact", "/prices", "/getSchedule", "/findAll","/news","/savePatient", "/saveReceptionist", "/saveDoctor", "/createDoctors").permitAll()
                         .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/patient/**").hasRole("PATIENT")

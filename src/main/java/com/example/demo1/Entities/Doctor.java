@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+
 @Getter
 @Setter
 @Entity
@@ -32,7 +33,7 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor_id")
     List<MedicalVisit> patient_visits;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "doctor")
     List <DoctorRatings> doctor_ratings;
 
     @OneToMany(mappedBy = "doctor")

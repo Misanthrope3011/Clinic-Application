@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +23,8 @@ public class ContactFormService {
     }
 
     public ResponseEntity<List<ContactForm>> getTodayForms() {
-        List<ContactForm> todaySentForms = contactFormRepository.findAll().stream().filter(e -> e.getDate().equals(new Date()))
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        List<ContactForm> todaySentForms = contactFormRepository.findAll().stream().filter(e -> e.getDate().toString().equals(LocalDateTime.now().format(formatter)))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(todaySentForms);

@@ -16,7 +16,6 @@ public class WorkSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "doctor_id")

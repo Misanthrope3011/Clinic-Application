@@ -23,6 +23,7 @@ public class News {
     String header;
     String content;
     LocalDateTime timeOfCreation;
+
 }
 
 

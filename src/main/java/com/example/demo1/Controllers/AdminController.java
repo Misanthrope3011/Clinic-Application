@@ -1,14 +1,8 @@
 package com.example.demo1.Controllers;
 
 import com.example.demo1.DTOs.DoctorDTO;
-import com.example.demo1.Entities.Doctor;
-import com.example.demo1.Entities.News;
-import com.example.demo1.Entities.Specialization;
-import com.example.demo1.Entities.User;
-import com.example.demo1.Repositories.DoctorRepository;
-import com.example.demo1.Repositories.NewsRepository;
-import com.example.demo1.Repositories.SampleRepository;
-import com.example.demo1.Repositories.SpecializationRepository;
+import com.example.demo1.Entities.*;
+import com.example.demo1.Repositories.*;
 import com.example.demo1.UserNotFoundException;
 import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
@@ -31,6 +25,7 @@ public class AdminController {
     DoctorRepository doctorRepository;
     SpecializationRepository specializationRepository;
     NewsRepository newsRepository;
+    ContactFormRepository contactFormRepository;
 
     @PostMapping("/addNews")
     public ResponseEntity<News> entity(@RequestBody News news) {
@@ -38,6 +33,16 @@ public class AdminController {
         newsRepository.save(news);
         return ResponseEntity.ok(news);
     }
+
+
+    @GetMapping("/getContactForms")
+    public ResponseEntity<ContactForm> contactForm(@RequestBody ContactForm contactForm) {
+        return ResponseEntity.ok(contactFormRepository.save(contactForm));
+    }
+
+
+
+
 
     @GetMapping("/findAllDoctors")
     public ResponseEntity<List<Doctor>> findAll() {

@@ -64,6 +64,8 @@ public class PatientController {
         patientVisit.setStartDate(VisitManagmentHelper.createDateFromString(visit.getVisit_start()));
         patientVisit.setEndDate(VisitManagmentHelper.createDateFromString(visit.getVisit_end()));
 
+
+
         return ResponseEntity.ok(patientVisit);
     }
 
