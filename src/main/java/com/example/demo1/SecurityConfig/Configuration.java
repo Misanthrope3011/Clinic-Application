@@ -89,6 +89,7 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
         };
     }
 
+
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

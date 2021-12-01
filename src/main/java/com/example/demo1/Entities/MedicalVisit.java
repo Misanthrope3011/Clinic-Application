@@ -3,6 +3,7 @@
 package com.example.demo1.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,10 +23,12 @@ public class MedicalVisit {
     LocalDateTime endDate;
     String description;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     Doctor doctor_id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "patient_id",referencedColumnName = "id")
     Patient patient_id;

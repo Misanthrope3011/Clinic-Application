@@ -18,7 +18,6 @@ public class Doctor {
     Long id;
 
     String name;
-    String second_name;
     String last_name;
 
     @JsonIgnore

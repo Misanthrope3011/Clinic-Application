@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/admin")
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @AllArgsConstructor
 public class AdminController {
@@ -49,7 +49,7 @@ public class AdminController {
 
         return ResponseEntity.ok(doctorRepository.findAll());
     }
-
+/*
 
     @PostMapping("/signUpDoctor")
     public ResponseEntity<Doctor> signUp(@RequestBody DoctorDTO doctorDTO) {
@@ -62,7 +62,7 @@ public class AdminController {
 
         return ResponseEntity.ok(doctor);
     }
-
+*/
 
 
 }

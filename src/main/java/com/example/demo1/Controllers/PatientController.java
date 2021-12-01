@@ -1,6 +1,7 @@
 package com.example.demo1.Controllers;
 
 import com.example.demo1.DTOs.Prototype;
+import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Entities.Patient;
@@ -16,10 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/patient")
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PatientController {
 
     @Autowired
@@ -38,6 +40,15 @@ public class PatientController {
         return ResponseEntity.ok(new ResponseMessages("Siema"));
     }
 
+    @GetMapping("/pendingVisits/{id}")
+    ResponseEntity getMedicalVisits(@PathVariable Long id) {
+        Patient patient = patientRepository.findById(id).orElse(null);
+        if (patient != null) {
+            return ResponseEntity.ok(patient.getVisits());
+        }
+        return ResponseEntity.badRequest().body("Nie znaleziono usera");
+    }
+
     @PostMapping("/getProfile")
     ResponseEntity getPatient(@RequestBody Prototype id) {
         User user = sampleRepository.findAll().get(id.getId().intValue());
@@ -50,10 +61,17 @@ public class PatientController {
 
 
     @PutMapping("/editProfile")
-    ResponseEntity editInfo(@RequestBody User user) {
+    ResponseEntity editInfo(@RequestBody UserDto user) {
         User edited = sampleRepository.findById(user.getId()).orElse(null);
-
-       return ResponseEntity.ok("XD");
+        assert edited != null;
+        if(user.getFirstName() != null)
+           edited.getPatient().setName(user.getFirstName());
+        edited.getPatient().setHome_number(user.getHomeNumber());
+        edited.getPatient().setPESEL(user.getPESEL());
+        edited.getPatient().setCity(user.getCity());
+        edited.getPatient().setStreet(user.getStreet());
+        edited.getPatient().setLast_name(user.getLastName());
+       return ResponseEntity.ok(edited);
     }
 
 

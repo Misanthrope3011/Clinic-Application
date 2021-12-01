@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class Controller {
 
     @Autowired
@@ -94,9 +94,14 @@ public class Controller {
         page = page - 1;
 
         Integer size = newsRepository.findAll().size();
+
+        List<News> allNews = newsRepository.findAll();
+        Collections.reverse(allNews);
+
+
         if(size > newsLimitOnSinglePage * (page + 1))
-            newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
-        else    newsOnRequestedPage =  newsRepository.findAll().subList(newsLimitOnSinglePage * page, size);
+            newsOnRequestedPage =  allNews.subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
+        else    newsOnRequestedPage =  allNews.subList(newsLimitOnSinglePage * page, size);
         return ResponseEntity.ok(newsOnRequestedPage);
     }
 

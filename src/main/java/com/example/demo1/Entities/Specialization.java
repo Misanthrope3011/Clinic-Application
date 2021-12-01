@@ -23,6 +23,7 @@ public class Specialization {
     @OneToMany(mappedBy = "doctor_specialization")
     List<Doctor> doctor_id;
 
-
+    @OneToMany(mappedBy = "specialization")
+    List<MedicalProcedures> procedures;
 
 }

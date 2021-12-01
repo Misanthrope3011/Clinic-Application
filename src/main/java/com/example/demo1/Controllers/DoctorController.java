@@ -1,5 +1,7 @@
 package com.example.demo1.Controllers;
 
+import com.example.demo1.DTOs.DoctorDTO;
+import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.Entities.*;
 import com.example.demo1.MessageResponse;
 import com.example.demo1.Repositories.DoctorRepository;
@@ -20,7 +22,7 @@ import java.util.Objects;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/doctor")
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200")
 public class DoctorController {
 
     @Autowired
@@ -41,7 +43,16 @@ public class DoctorController {
 
 
 
-
+    @PutMapping("/editProfile")
+    ResponseEntity<User> editInfo(@RequestBody DoctorDTO user) {
+        User edited = sampleRepository.findById(user.getId()).orElse(null);
+        assert edited != null;
+        if (user.getName() != null)
+                edited.getDoctor().setName(user.getName());
+        if(user.getLast_name() != null)
+                edited.getDoctor().setLast_name(user.getLast_name());
+        return ResponseEntity.ok(sampleRepository.save(edited));
+    }
 
     @PutMapping("editPatient/{id}")
     ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {

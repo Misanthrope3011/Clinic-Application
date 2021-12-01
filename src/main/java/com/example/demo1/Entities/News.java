@@ -21,6 +21,7 @@ public class News {
     private Long id;
     String title;
     String header;
+    @Column(length = 1000)
     String content;
     LocalDateTime timeOfCreation;
 

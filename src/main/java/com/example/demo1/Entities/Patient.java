@@ -23,7 +23,6 @@ public class Patient {
     Long id;
 
     private String name;
-    private String second_name;
     private String last_name;
     private String PESEL;
     private String city;
@@ -51,6 +50,7 @@ public class Patient {
     @JoinColumn(name = "ratings_id", referencedColumnName = "id")
     private List<DoctorRatings> ratings_by_patient;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "patient_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MedicalVisit> visits;
 
