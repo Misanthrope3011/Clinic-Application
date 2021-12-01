@@ -34,6 +34,7 @@ public class PatientController {
 
     @GetMapping("/welcome")
     ResponseEntity<ResponseMessages> checkAuthorities() {
+
         return ResponseEntity.ok(new ResponseMessages("Siema"));
     }
 
@@ -54,6 +55,8 @@ public class PatientController {
 
        return ResponseEntity.ok("XD");
     }
+
+
     @PostMapping("/registerVisit")
     ResponseEntity<MedicalVisit> getFormVisitAppointment(@RequestBody VisitDTO visit) {
 
@@ -63,8 +66,6 @@ public class PatientController {
         patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
         patientVisit.setStartDate(VisitManagmentHelper.createDateFromString(visit.getVisit_start()));
         patientVisit.setEndDate(VisitManagmentHelper.createDateFromString(visit.getVisit_end()));
-
-
 
         return ResponseEntity.ok(patientVisit);
     }

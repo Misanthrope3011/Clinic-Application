@@ -28,6 +28,7 @@ public class DoctorController {
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
+
     @DeleteMapping("deletePatient/{id}")
     ResponseEntity deleteDoctor(@PathVariable Long id) {
         Patient patient = Objects.requireNonNull(patientRepository.findById(id).orElse(null));
@@ -37,6 +38,10 @@ public class DoctorController {
        // sampleRepository.deleteById(id);
         return ResponseEntity.ok("Usunieto");
     }
+
+
+
+
 
     @PutMapping("editPatient/{id}")
     ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {
@@ -57,11 +62,16 @@ public class DoctorController {
         Doctor doctor = doctorRepository.findById(id).orElse(null);
 
         if(doctor != null) {
-            return ResponseEntity.ok((ArrayList<MedicalVisit>) doctor.getPatient_visits());
+            return ResponseEntity.ok(doctor.getPatient_visits());
         }
 
         return ResponseEntity.badRequest().body("Nie znaleziono doktora");
 
+    }
+
+    @GetMapping("/getPatient/{id}")
+    public ResponseEntity<Patient> getPatients(@PathVariable Long id) {
+        return ResponseEntity.ok(patientRepository.findById(id).orElse(null));
     }
 
     @GetMapping("/contactForm")
