@@ -10,7 +10,7 @@ import lombok.Setter;
 public class DoctorDTO {
 
     Long id;
-    String name;
-    String last_name;
+    String firstName;
+    String lastName;
 
 }

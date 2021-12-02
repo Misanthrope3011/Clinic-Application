@@ -6,7 +6,9 @@ import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Entities.Patient;
 import com.example.demo1.Entities.User;
+import com.example.demo1.Enums.UserRole;
 import com.example.demo1.Helpers.VisitManagmentHelper;
+import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.MedicalVisitRepository;
@@ -61,7 +63,7 @@ public class PatientController {
 
 
     @PutMapping("/editProfile")
-    ResponseEntity editInfo(@RequestBody UserDto user) {
+    ResponseEntity<LoginResponse> editInfo(@RequestBody UserDto user) {
         User edited = sampleRepository.findById(user.getId()).orElse(null);
         assert edited != null;
         if(user.getFirstName() != null)
@@ -71,7 +73,9 @@ public class PatientController {
         edited.getPatient().setCity(user.getCity());
         edited.getPatient().setStreet(user.getStreet());
         edited.getPatient().setLast_name(user.getLastName());
-       return ResponseEntity.ok(edited);
+        sampleRepository.save(edited);
+
+       return ResponseEntity.ok(new LoginResponse(edited.getId(), edited.getEmail(), edited.getPatient(), List.of(UserRole.ROLE_PATIENT.name())));
     }
 
 

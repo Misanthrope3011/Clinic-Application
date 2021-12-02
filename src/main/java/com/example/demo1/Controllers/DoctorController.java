@@ -3,7 +3,9 @@ package com.example.demo1.Controllers;
 import com.example.demo1.DTOs.DoctorDTO;
 import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.Entities.*;
+import com.example.demo1.Enums.UserRole;
 import com.example.demo1.MessageResponse;
+import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
@@ -41,17 +43,38 @@ public class DoctorController {
         return ResponseEntity.ok("Usunieto");
     }
 
+    @PutMapping("/editPatientProfile")
+    ResponseEntity editInfo(@RequestBody UserDto user) {
+        Patient edited = patientRepository.findById(user.getId()).orElse(null);
+
+        if(user.getFirstName() != null) {
+            edited.setName(user.getFirstName());
+            edited.setHome_number(user.getHomeNumber());
+            edited.setPESEL(user.getPESEL());
+            edited.setCity(user.getCity());
+            edited.setStreet(user.getStreet());
+            edited.setLast_name(user.getLastName());
+            patientRepository.save(edited);
+        }
+
+        return ResponseEntity.ok(edited);
+    }
+
+
 
 
     @PutMapping("/editProfile")
-    ResponseEntity<User> editInfo(@RequestBody DoctorDTO user) {
-        User edited = sampleRepository.findById(user.getId()).orElse(null);
-        assert edited != null;
-        if (user.getName() != null)
-                edited.getDoctor().setName(user.getName());
-        if(user.getLast_name() != null)
-                edited.getDoctor().setLast_name(user.getLast_name());
-        return ResponseEntity.ok(sampleRepository.save(edited));
+    ResponseEntity editInfo(@RequestBody DoctorDTO user) {
+        Doctor edited = doctorRepository.findById(user.getId()).orElse(null);
+      if (user.getFirstName() != null)
+                edited.setName(user.getFirstName());
+        if(user.getLastName() != null)
+                edited.setLast_name(user.getLastName());
+
+        doctorRepository.save(edited);
+
+       return ResponseEntity.ok(edited);
+
     }
 
     @PutMapping("editPatient/{id}")

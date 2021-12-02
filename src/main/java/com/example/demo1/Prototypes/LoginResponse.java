@@ -14,6 +14,20 @@ import java.util.List;
 @Setter
 public class LoginResponse {
 
+    public LoginResponse(Long id, String email, Patient patient, List<String> roles) {
+        this.id = id;
+        this.email = email;
+        this.patient = patient;
+        this.roles = roles;
+    }
+
+    public LoginResponse(Long id, String email, Doctor doctor, List<String> roles) {
+        this.id = id;
+        this.email = email;
+        this.doctor = doctor;
+        this.roles = roles;
+    }
+
     String token;
     Long id;
     String username;
