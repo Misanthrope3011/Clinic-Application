@@ -11,8 +11,8 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 public class VisitDTO {
-
     private Long id;
+    private Long id_procedure;
     private Long patient_id;
     private Long doctor_id;
     private String visit_start;

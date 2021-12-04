@@ -170,7 +170,7 @@ public class PatientController {
     @PutMapping("/editProfile")
     ResponseEntity<LoginResponse> editInfo(@RequestBody UserDto user) {
         User edited = sampleRepository.findById(user.getId()).orElse(null);
-        assert edited != null;
+
         if(user.getFirstName() != null)
            edited.getPatient().setName(user.getFirstName());
         edited.getPatient().setHome_number(user.getHomeNumber());
@@ -208,7 +208,7 @@ public class PatientController {
         patientVisit.setDescription(visit.getDescription());
         patientVisit.setDoctor_id(doctorRepository.findById(visit.getDoctor_id()).orElse(null));
         patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
-        patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId()).orElse(null));
+        patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId_procedure()).orElse(null));
         patientVisit.setIsPayed("nieOplacona");
         String[] hourMinute = visit.getVisit_start().split(":");
         patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));

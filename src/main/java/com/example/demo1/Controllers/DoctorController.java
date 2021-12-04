@@ -73,13 +73,13 @@ public class DoctorController {
     }
     @PutMapping("/editProfile")
     ResponseEntity editInfo(@RequestBody DoctorDTO user) {
-        Doctor edited = doctorRepository.findById(user.getId()).orElse(null);
+        User edited = sampleRepository.findById(user.getId()).orElse(null);
       if (user.getFirstName() != null)
-                edited.setName(user.getFirstName());
+                edited.getDoctor().setName(user.getFirstName());
         if(user.getLastName() != null)
-                edited.setLast_name(user.getLastName());
+                edited.getDoctor().setLast_name(user.getLastName());
 
-        doctorRepository.save(edited);
+        sampleRepository.save(edited);
 
        return ResponseEntity.ok(edited);
 
