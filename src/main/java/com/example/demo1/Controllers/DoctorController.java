@@ -111,6 +111,20 @@ public class DoctorController {
 
     }
 
+
+    @GetMapping("/getVisit/{id}")
+    ResponseEntity getVisitToEdition(@PathVariable Long id) {
+
+        MedicalVisit visit = visitRepository.findById(id).orElse(null);
+
+        if(visit != null) {
+            return ResponseEntity.ok(visit);
+        }
+
+        return ResponseEntity.badRequest().body("Nie znaleziono wizyty");
+
+    }
+
     @GetMapping("/getPatient/{id}")
     public ResponseEntity<Patient> getPatients(@PathVariable Long id) {
         return ResponseEntity.ok(patientRepository.findById(id).orElse(null));

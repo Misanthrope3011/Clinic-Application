@@ -18,4 +18,5 @@ public class VisitDTO {
     private String visit_start;
     private Date day;
     private String description;
+    private String isPaid;
 }

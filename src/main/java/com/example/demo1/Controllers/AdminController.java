@@ -42,8 +42,6 @@ public class AdminController {
 
 
 
-
-
     @GetMapping("/findAllDoctors")
     public ResponseEntity<List<Doctor>> findAll() {
 
