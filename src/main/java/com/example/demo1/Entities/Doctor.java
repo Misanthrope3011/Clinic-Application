@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -29,6 +30,7 @@ public class Doctor {
     @JoinColumn(name = "specialization_id", referencedColumnName = "id")
     Specialization doctor_specialization;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "doctor_id")
     List<MedicalVisit> patient_visits;
 
@@ -42,6 +44,7 @@ public class Doctor {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
+
 
 }
 

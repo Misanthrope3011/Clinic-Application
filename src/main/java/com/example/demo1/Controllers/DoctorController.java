@@ -2,21 +2,20 @@ package com.example.demo1.Controllers;
 
 import com.example.demo1.DTOs.DoctorDTO;
 import com.example.demo1.DTOs.UserDto;
+import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.*;
-import com.example.demo1.Enums.UserRole;
-import com.example.demo1.MessageResponse;
-import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
+import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
-import javassist.tools.rmi.Sample;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +31,7 @@ public class DoctorController {
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
+    private VisitRepository visitRepository;
 
     @DeleteMapping("deletePatient/{id}")
     ResponseEntity deleteDoctor(@PathVariable Long id) {
@@ -63,6 +63,14 @@ public class DoctorController {
 
 
 
+
+    @PutMapping("/editVisit")
+    ResponseEntity editVisitInfo(@RequestBody VisitDTO visitDTO) {
+
+
+
+        return ResponseEntity.ok("XDD");
+    }
     @PutMapping("/editProfile")
     ResponseEntity editInfo(@RequestBody DoctorDTO user) {
         Doctor edited = doctorRepository.findById(user.getId()).orElse(null);

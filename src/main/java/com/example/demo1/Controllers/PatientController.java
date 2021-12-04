@@ -3,24 +3,22 @@ package com.example.demo1.Controllers;
 import com.example.demo1.DTOs.Prototype;
 import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.DTOs.VisitDTO;
+import com.example.demo1.Entities.Doctor;
 import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Entities.Patient;
 import com.example.demo1.Entities.User;
 import com.example.demo1.Enums.UserRole;
-import com.example.demo1.Helpers.VisitManagmentHelper;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Prototypes.ResponseMessages;
-import com.example.demo1.Repositories.DoctorRepository;
-import com.example.demo1.Repositories.MedicalVisitRepository;
-import com.example.demo1.Repositories.PatientRepository;
-import com.example.demo1.Repositories.SampleRepository;
+import com.example.demo1.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
-import java.util.List;
-
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/patient")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -32,6 +30,8 @@ public class PatientController {
     private SampleRepository sampleRepository;
     @Autowired
     private MedicalVisitRepository medicalVisitRepository;
+    @Autowired
+    private MedicalProcedure medicalProcedure;
     @Autowired
     private DoctorRepository doctorRepository;
 
@@ -45,10 +45,109 @@ public class PatientController {
     @GetMapping("/pendingVisits/{id}")
     ResponseEntity getMedicalVisits(@PathVariable Long id) {
         Patient patient = patientRepository.findById(id).orElse(null);
+        List <MedicalVisit> pending = new ArrayList<>();
+        List <MedicalVisit> history = new ArrayList<>();
         if (patient != null) {
-            return ResponseEntity.ok(patient.getVisits());
+
+                 List<MedicalVisit> sortedByDate =  patient.getVisits()
+                            .stream()
+                            .sorted(Comparator.comparing(MedicalVisit::getStartDate, Comparator.reverseOrder()))
+                            .collect(Collectors.toList());
+
+                 for (int i = 0; i < sortedByDate.size(); i++) {
+                     if (sortedByDate.get(i).getStartDate().compareTo(LocalDateTime.now()) <= 0) {
+                         pending = sortedByDate.subList(0, i);
+                         history = sortedByDate.subList(i, sortedByDate.size());
+                         break;
+                     }
+                 }
+
+             TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
+             visitData.put("Oczekujace", pending);
+             visitData.put("Historia", history);
+
+             return ResponseEntity.ok(visitData);
         }
         return ResponseEntity.badRequest().body("Nie znaleziono usera");
+    }
+
+
+    @GetMapping("/sortByDebts/{id}")
+    ResponseEntity getDebts(@PathVariable Long id) {
+        Patient patient = patientRepository.findById(id).orElse(null);
+        if(patient.getVisits() == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono pacjenta");
+        }
+
+
+            List<MedicalVisit> paidVisits = patient.getVisits()
+                    .stream().filter(e -> e.getIsPayed() != null)
+                    .filter(e -> e.getIsPayed().equals("Oplacone"))
+                    .collect(Collectors.toList());
+            List<MedicalVisit> oweVisits = patient.getVisits()
+                    .stream().filter(e -> e.getIsPayed() != null)
+                    .filter(e -> !e.getIsPayed().equals("Oplacone"))
+                    .collect(Collectors.toList());
+
+            TreeMap<String, List<MedicalVisit>> isPaid = new TreeMap<>();
+            isPaid.put("Zaplacone", paidVisits);
+            isPaid.put("NieZaplacone",oweVisits);
+
+            return ResponseEntity.ok(isPaid);
+    }
+
+    @GetMapping("/calculateBalance/{id}")
+    ResponseEntity calculateBalance(@PathVariable Long id) {
+        double payedVisits = 0;
+        double totalMoney = 0;
+
+        Patient patient = patientRepository.findById(id).orElse(null);
+        List<MedicalVisit> medicalVisits;
+        if(patient.getVisits() == null) {
+            return ResponseEntity.badRequest().body("XD?");
+        }
+/*
+        if (patippayedVisits = medicalVisits
+                                .stream().filter(e -> e.getIsPayed().equals("Oplacone"))
+                                .map(e -> e.getMedicalProcedure().getPrice())
+                                .mapToDouble(Double::doubleValue);ent.getVisits() != null) {
+            medicalVisits = patient.getVisits();
+                    DoubleStream
+
+
+                    totalMoney = medicalVisits
+                    .stream().map(e -> e.getMedicalProcedure().getPrice())
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+
+         TreeMap<String, Double> calulcations = new TreeMap<>();
+            calulcations.put("Oplacone", payedVisits);
+            calulcations.put("Totalnie", totalMoney);
+
+            return ResponseEntity.ok(patient);
+        }
+
+ */
+        List<Double> prices = patient.getVisits().stream().map(e -> e.getMedicalProcedure().getPrice()).collect(Collectors.toList());
+
+        for (Double price: prices) {
+            totalMoney += price;
+        }
+
+        List<Double> filtered = patient.getVisits()
+                .stream()
+                .filter(e -> e.getIsPayed() != null)
+                .filter(e -> e.getIsPayed().equals("Oplacone"))
+                .map(e -> e.getMedicalProcedure().getPrice()).collect(Collectors.toList());
+
+        for (Double price: filtered) {
+            payedVisits += price;
+        }
+        TreeMap<String, Double> result = new TreeMap();
+        result.put("Oplacone", payedVisits);
+        result.put("Calosc", totalMoney);
+
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/getProfile")
@@ -79,17 +178,70 @@ public class PatientController {
     }
 
 
+
     @PostMapping("/registerVisit")
-    ResponseEntity<MedicalVisit> getFormVisitAppointment(@RequestBody VisitDTO visit) {
+    ResponseEntity getFormVisitAppointment(@RequestBody VisitDTO visit) {
+
+        Doctor doctor = doctorRepository.findById(visit.getDoctor_id()).orElse(null);
+
+        List<MedicalVisit> visits = doctor.getPatient_visits();
+        List<LocalDateTime> dates = visits.stream().map(MedicalVisit::getStartDate)
+                                        .sorted().collect(Collectors.toList());
+        String hour = visit.getVisit_start().split(":")[0];
+        String minute = visit.getVisit_start().split(":")[1];
+
+        LocalDateTime dateOfVisit = LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour), Integer.parseInt(minute)));
+
+        for (LocalDateTime busyDates: dates) {
+            if(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour), Integer.parseInt(minute))).compareTo(busyDates) == 0) {
+                return ResponseEntity.badRequest().body("Zajety termin");
+            }
+        }
 
         MedicalVisit patientVisit = new MedicalVisit();
         patientVisit.setDescription(visit.getDescription());
         patientVisit.setDoctor_id(doctorRepository.findById(visit.getDoctor_id()).orElse(null));
         patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
-        patientVisit.setStartDate(VisitManagmentHelper.createDateFromString(visit.getVisit_start()));
-        patientVisit.setEndDate(VisitManagmentHelper.createDateFromString(visit.getVisit_end()));
+        patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId()).orElse(null));
+        patientVisit.setIsPayed("nieOplacona");
+        String[] hourMinute = visit.getVisit_start().split(":");
+        patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));
 
-        return ResponseEntity.ok(patientVisit);
+        return ResponseEntity.ok(medicalVisitRepository.save(patientVisit));
+
+    }
+
+
+    @PostMapping("/getDoctorHours")
+    ResponseEntity getAvailableHours(@RequestBody VisitDTO visitDTO) {
+        List<LocalTime> hoursThatDay = new ArrayList<>();
+        List<LocalTime> listOfHours = new ArrayList<>();
+        LocalTime localTime = LocalTime.of(9, 0);
+
+        while (localTime.getHour() < 17) {
+            listOfHours.add(localTime);
+            localTime = localTime.plusMinutes(30);
+        }
+
+        Doctor doctor = doctorRepository.findById(visitDTO.getDoctor_id()).orElse(null);
+        if(doctor != null) {
+            hoursThatDay = doctor.getPatient_visits().stream()
+                    .filter(e -> e.getStartDate().getDayOfMonth() == visitDTO.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfMonth())
+                    .sorted(Comparator.comparing(MedicalVisit::getStartDate))
+                    .map(e -> e.getStartDate().toLocalTime())
+                    .collect(Collectors.toList());
+        }
+
+        for (LocalTime time : hoursThatDay) {
+            for (Iterator<LocalTime> datesIterator = listOfHours.iterator(); datesIterator.hasNext(); ) {
+                LocalTime temp = datesIterator.next();
+                if (temp.compareTo(time) == 0) {
+                    datesIterator.remove();
+                }
+            }
+        }
+
+        return ResponseEntity.ok(listOfHours);
     }
 
 }

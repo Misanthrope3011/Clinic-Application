@@ -32,12 +32,10 @@ public class SortingVisitDates {
     private Doctor doctor;
 
 
-
-    public boolean isDateAvailable(Long doctorId, LocalDateTime visitDate) {
-        availableDates = new ArrayList<>();
+    public boolean isDateAvailable(Long doctorId, ArrayList<LocalDateTime> getAllDoctorVisits) {
         Doctor currentDoctor = doctorRepository.findById(doctorId).orElse(null);
 
-        if(currentDoctor == null) {
+        if (currentDoctor == null) {
             return false;
         } else {
             Calendar calendar = Calendar.getInstance();
@@ -50,12 +48,14 @@ public class SortingVisitDates {
             end.format(currentDoctor.getWork_schedule().get(0).getEnd_hour());
             */
         }
+        return false;
+    }
+}
 
-        ArrayList<MedicalVisit> getAllDoctorVisits = (ArrayList<MedicalVisit>) doctorRepository.findById((long)6).get().getPatient_visits();
 
 
 
-        ArrayList<LocalDateTime> sortedDoctorSchedule = (ArrayList<LocalDateTime>) getAllDoctorVisits.stream().map(MedicalVisit::getStartDate).sorted().collect(Collectors.toList());
+     /*   ArrayList<LocalDateTime> sortedDoctorSchedule = (ArrayList<LocalDateTime>) getAllDoctorVisits.stream().map(e -> e.).sorted().collect(Collectors.toList());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -68,5 +68,9 @@ public class SortingVisitDates {
         }
 
         return true;
+
     }
 }
+    */
+
+

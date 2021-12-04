@@ -53,6 +53,8 @@ public class Controller {
     ExaminationService examinationService;
     SpecializationRepository specializationRepository;
     SampleRepository userRepository;
+    MedicalProcedure medicalProcedure;
+    @Autowired
     UserDetailService userDetailService;
     PasswordEncoder encoder;
     JWToken jwtUtils;
@@ -87,6 +89,11 @@ public class Controller {
         return ResponseEntity.ok("Mordo mondo");
     }
 
+    @GetMapping("/getMedicalProcedures")
+    ResponseEntity<List<MedicalProcedures>> getProceudres() {
+        return ResponseEntity.ok(medicalProcedure.findAll());
+    }
+    
     @GetMapping("/news")
      public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
 
@@ -269,4 +276,10 @@ public class Controller {
     ResponseEntity<Doctor> getHisWorkHours() {
         return ResponseEntity.ok(doctorRepository.findById((long)6).get());
     }
+
+    @GetMapping("/getDoctorList")
+    ResponseEntity<List<Doctor>> getAll(){
+        return ResponseEntity.ok(doctorRepository.findAll());
+    }
+
 }

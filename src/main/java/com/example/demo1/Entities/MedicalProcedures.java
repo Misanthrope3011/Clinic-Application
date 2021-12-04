@@ -1,9 +1,20 @@
 package com.example.demo1.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class MedicalProcedures {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +23,12 @@ public class MedicalProcedures {
     String name;
     Double price;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "medicalProcedure")
+    List<MedicalVisit> visitForProcedure;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
     Specialization specialization;
+
 }

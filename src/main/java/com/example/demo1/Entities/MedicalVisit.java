@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,14 +24,23 @@ public class MedicalVisit {
     LocalDateTime endDate;
     String description;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     Doctor doctor_id;
 
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "procedure_id", referencedColumnName = "id")
+    MedicalProcedures medicalProcedure;
+
     @ManyToOne
     @JoinColumn(name = "patient_id",referencedColumnName = "id")
     Patient patient_id;
 
+    String isPayed;
+
+
+
+
+
 }
+
