@@ -47,20 +47,26 @@ public class PatientController {
         Patient patient = patientRepository.findById(id).orElse(null);
         List <MedicalVisit> pending = new ArrayList<>();
         List <MedicalVisit> history = new ArrayList<>();
+        boolean hasAnyPending = false;
         if (patient != null) {
 
                  List<MedicalVisit> sortedByDate =  patient.getVisits()
                             .stream()
-                            .sorted(Comparator.comparing(MedicalVisit::getStartDate, Comparator.reverseOrder()))
+                            .sorted(Comparator.comparing(MedicalVisit::getStartDate))
                             .collect(Collectors.toList());
 
                  for (int i = 0; i < sortedByDate.size(); i++) {
-                     if (sortedByDate.get(i).getStartDate().compareTo(LocalDateTime.now()) <= 0) {
-                         pending = sortedByDate.subList(0, i);
-                         history = sortedByDate.subList(i, sortedByDate.size());
+                     if (sortedByDate.get(i).getStartDate().compareTo(LocalDateTime.now()) > 0) {
+                         history = sortedByDate.subList(0, i);
+                         pending = sortedByDate.subList(i, sortedByDate.size());
+                         hasAnyPending = true;
                          break;
                      }
                  }
+
+                if(!hasAnyPending) {
+                    history = sortedByDate;
+                }
 
              TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
              visitData.put("Oczekujace", pending);
