@@ -54,5 +54,4 @@ public class Patient {
     @OneToMany(mappedBy = "patient_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MedicalVisit> visits;
 
-
 }
