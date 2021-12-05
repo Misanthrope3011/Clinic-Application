@@ -89,12 +89,10 @@ public class PatientController {
 
 
             List<MedicalVisit> paidVisits = patient.getVisits()
-                    .stream().filter(e -> e.getIsPayed() != null)
-                    .filter(e -> e.getIsPayed().equals("Oplacone"))
+                    .stream().filter(MedicalVisit::isPaid)
                     .collect(Collectors.toList());
             List<MedicalVisit> oweVisits = patient.getVisits()
-                    .stream().filter(e -> e.getIsPayed() != null)
-                    .filter(e -> !e.getIsPayed().equals("Oplacone"))
+                    .stream().filter(e -> !(e.isPaid()))
                     .collect(Collectors.toList());
 
             TreeMap<String, List<MedicalVisit>> isPaid = new TreeMap<>();
@@ -116,7 +114,7 @@ public class PatientController {
         }
 /*
         if (patippayedVisits = medicalVisits
-                                .stream().filter(e -> e.getIsPayed().equals("Oplacone"))
+                                .stream().filter(e -> e.isPaid().equals("Oplacone"))
                                 .map(e -> e.getMedicalProcedure().getPrice())
                                 .mapToDouble(Double::doubleValue);ent.getVisits() != null) {
             medicalVisits = patient.getVisits();
@@ -144,8 +142,7 @@ public class PatientController {
 
         List<Double> filtered = patient.getVisits()
                 .stream()
-                .filter(e -> e.getIsPayed() != null)
-                .filter(e -> e.getIsPayed().equals("Oplacone"))
+                .filter(MedicalVisit::isPaid)
                 .map(e -> e.getMedicalProcedure().getPrice()).collect(Collectors.toList());
 
         for (Double price: filtered) {
@@ -211,7 +208,7 @@ public class PatientController {
         patientVisit.setDoctor_id(doctorRepository.findById(visit.getDoctor_id()).orElse(null));
         patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
         patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId_procedure()).orElse(null));
-        patientVisit.setIsPayed("nieOplacona");
+        patientVisit.setPaid(false);
         String[] hourMinute = visit.getVisit_start().split(":");
         patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));
 

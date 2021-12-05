@@ -13,10 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,16 +56,19 @@ public class DoctorController {
         return ResponseEntity.ok(edited);
     }
 
+    @PutMapping("/editVisit/{id}")
+    ResponseEntity editVisitInfo(@PathVariable Long id, @RequestBody VisitDTO visitDTO) {
 
+        MedicalVisit visit = visitRepository.findById(id).orElse(null);
 
+        if(visit != null) {
+            visit.setPaid(visitDTO.getIsPaid());
+            visit.setDescription(visitDTO.getDescription());
 
+            return ResponseEntity.ok(visitRepository.save(visit));
+        }
 
-    @PutMapping("/editVisit")
-    ResponseEntity editVisitInfo(@RequestBody VisitDTO visitDTO) {
-
-
-
-        return ResponseEntity.ok("XDD");
+        return ResponseEntity.badRequest().body("Nie istnieje ta wizyta");
     }
     @PutMapping("/editProfile")
     ResponseEntity editInfo(@RequestBody DoctorDTO user) {
@@ -142,6 +141,20 @@ public class DoctorController {
         }
 
         return (ResponseEntity) ResponseEntity.badRequest();
+    }
+
+    @DeleteMapping("/abandonVisit/{id}")
+    ResponseEntity deleteVisit(@PathVariable Long id) {
+       MedicalVisit visit =  visitRepository.findById(id).orElse(null);
+
+        if(visit == null) {
+            ResponseEntity.badRequest().body("Wizyta nie istnieje");
+        } else {
+            visitRepository.delete(visit);
+
+            return ResponseEntity.ok("Usunieto");
+        }
+            return ResponseEntity.badRequest().body("Nie znaleziono");
     }
 
 }

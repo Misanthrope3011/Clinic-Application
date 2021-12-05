@@ -33,7 +33,7 @@ public class MedicalVisit {
     @JoinColumn(name = "patient_id",referencedColumnName = "id")
     Patient patient_id;
 
-    String isPayed;
+    boolean isPaid = false;
 
 
 
