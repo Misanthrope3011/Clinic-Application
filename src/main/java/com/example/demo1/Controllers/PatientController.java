@@ -196,6 +196,7 @@ public class PatientController {
         List<MedicalVisit> visits = doctor.getPatient_visits();
         List<LocalDateTime> dates = visits.stream().map(MedicalVisit::getStartDate)
                                         .sorted().collect(Collectors.toList());
+
         String hour = visit.getVisit_start().split(":")[0];
         String minute = visit.getVisit_start().split(":")[1];
 
