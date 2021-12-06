@@ -8,9 +8,11 @@ import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Entities.Patient;
 import com.example.demo1.Entities.User;
 import com.example.demo1.Enums.UserRole;
+import com.example.demo1.MessageResponse;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.*;
+import com.sun.mail.iap.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ public class PatientController {
     @Autowired
     private SampleRepository sampleRepository;
     @Autowired
-    private MedicalVisitRepository medicalVisitRepository;
+    private VisitRepository medicalVisitRepository;
     @Autowired
     private MedicalProcedure medicalProcedure;
     @Autowired
@@ -209,6 +211,7 @@ public class PatientController {
         patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
         patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId_procedure()).orElse(null));
         patientVisit.setPaid(false);
+        patientVisit.setDeleteRequest(false);
         String[] hourMinute = visit.getVisit_start().split(":");
         patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));
 
@@ -216,6 +219,19 @@ public class PatientController {
 
     }
 
+
+    @GetMapping("/deleteRequest/{id}")
+    ResponseEntity setDeleteRequest(@PathVariable Long id) {
+
+        MedicalVisit visit = medicalVisitRepository.findById(id).orElse(null);
+        if(visit == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono wizyty");
+        } else {
+            visit.setDeleteRequest(true);
+            medicalVisitRepository.save(visit);
+            return ResponseEntity.ok(visit);
+        }
+    }
 
     @PostMapping("/getDoctorHours")
     ResponseEntity getAvailableHours(@RequestBody VisitDTO visitDTO) {

@@ -1,10 +1,8 @@
 package com.example.demo1.VisitManager;
 
 import com.example.demo1.Entities.Doctor;
-import com.example.demo1.Entities.MedicalVisit;
-import com.example.demo1.Entities.WorkSchedule;
 import com.example.demo1.Repositories.DoctorRepository;
-import com.example.demo1.Repositories.MedicalVisitRepository;
+import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Repositories.WorkScheduleRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +10,8 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
@@ -26,7 +21,7 @@ public class SortingVisitDates {
     @Autowired
     private DoctorRepository doctorRepository;
     private WorkScheduleRepository workScheduleRepository;
-    private MedicalVisitRepository medicalVisitRepository;
+    private VisitRepository medicalVisitRepository;
 
     private List<DateFormat> availableDates;
     private Doctor doctor;

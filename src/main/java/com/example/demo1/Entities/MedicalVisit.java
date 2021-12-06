@@ -33,8 +33,9 @@ public class MedicalVisit {
     @JoinColumn(name = "patient_id",referencedColumnName = "id")
     Patient patient_id;
 
-    boolean isPaid = false;
+    boolean isPaid;
 
+    boolean deleteRequest;
 
 
 

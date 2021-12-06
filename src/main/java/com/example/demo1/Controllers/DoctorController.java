@@ -9,12 +9,14 @@ import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
+import com.example.demo1.VisitFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -28,6 +30,8 @@ public class DoctorController {
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
     private VisitRepository visitRepository;
+
+
 
     @DeleteMapping("deletePatient/{id}")
     ResponseEntity deleteDoctor(@PathVariable Long id) {
@@ -97,8 +101,8 @@ public class DoctorController {
         return ResponseEntity.ok(doctorToEdit);
     }
 
-    @GetMapping("/pendingVisits")
-    ResponseEntity getPendingVisits(@RequestParam Long id) {
+    @GetMapping("/pendingVisits/{id}")
+    ResponseEntity getPendingVisits(@PathVariable Long id) {
 
         Doctor doctor = doctorRepository.findById(id).orElse(null);
 
@@ -155,6 +159,13 @@ public class DoctorController {
             return ResponseEntity.ok("Usunieto");
         }
             return ResponseEntity.badRequest().body("Nie znaleziono");
+    }
+
+    @GetMapping("/getDeleteRequests")
+    ResponseEntity deleteRequests() {
+
+        return ResponseEntity.ok(visitRepository.findAll().stream()
+        .filter(e -> e.isDeleteRequest()).collect(Collectors.toList()));
     }
 
 }

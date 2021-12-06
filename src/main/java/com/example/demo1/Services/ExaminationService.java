@@ -2,9 +2,7 @@ package com.example.demo1.Services;
 
 
 import com.example.demo1.Entities.MedicalProcedures;
-import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Repositories.MedicalProcedure;
-import com.example.demo1.Repositories.MedicalVisitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
