@@ -181,6 +181,7 @@ public class PatientController {
         edited.getPatient().setCity(user.getCity());
         edited.getPatient().setStreet(user.getStreet());
         edited.getPatient().setLast_name(user.getLastName());
+        edited.getPatient().setPostal_code(user.getPostalCode());
         sampleRepository.save(edited);
 
        return ResponseEntity.ok(new LoginResponse(edited.getId(), edited.getEmail(), edited.getPatient(), List.of(UserRole.ROLE_PATIENT.name())));
