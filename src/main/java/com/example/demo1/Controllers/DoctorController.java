@@ -9,7 +9,6 @@ import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
-import com.example.demo1.VisitFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

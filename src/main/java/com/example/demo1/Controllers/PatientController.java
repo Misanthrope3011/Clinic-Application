@@ -12,6 +12,7 @@ import com.example.demo1.MessageResponse;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.*;
+import com.example.demo1.Services.VisitFilter;
 import com.sun.mail.iap.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,8 @@ public class PatientController {
     private MedicalProcedure medicalProcedure;
     @Autowired
     private DoctorRepository doctorRepository;
-
+    @Autowired
+    private VisitFilter visitFilter;
 
     @GetMapping("/welcome")
     ResponseEntity<ResponseMessages> checkAuthorities() {

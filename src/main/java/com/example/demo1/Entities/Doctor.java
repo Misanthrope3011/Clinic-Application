@@ -31,13 +31,14 @@ public class Doctor {
     Specialization doctor_specialization;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "doctor_id")
+    @OneToMany(mappedBy = "doctor_id", cascade = CascadeType.ALL)
     List<MedicalVisit> patient_visits;
 
     @OneToMany(mappedBy = "doctor")
     List <DoctorRatings> doctor_ratings;
 
-    @OneToMany(mappedBy = "doctor")
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     List<WorkSchedule> work_schedule;
 
     @JsonIgnore
