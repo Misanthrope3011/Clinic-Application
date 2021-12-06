@@ -13,8 +13,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Objects;
+
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -104,13 +105,39 @@ public class DoctorController {
     ResponseEntity getPendingVisits(@PathVariable Long id) {
 
         Doctor doctor = doctorRepository.findById(id).orElse(null);
+        List<MedicalVisit> pending = new ArrayList<>();
+        List<MedicalVisit> history = new ArrayList<>();
+        boolean hasAnyPending = false;
+        if (doctor != null) {
 
-        if(doctor != null) {
-            return ResponseEntity.ok(doctor.getPatient_visits());
+            List<MedicalVisit> sortedByDate = doctor.getPatient_visits()
+                    .stream()
+                    .sorted(Comparator.comparing(MedicalVisit::getStartDate))
+                    .collect(Collectors.toList());
+
+            for (int i = 0; i < sortedByDate.size(); i++) {
+                if (sortedByDate.get(i).getStartDate().compareTo(LocalDateTime.now()) > 0) {
+                    history = sortedByDate.subList(0, i);
+                    pending = sortedByDate.subList(i, sortedByDate.size());
+                    hasAnyPending = true;
+                    break;
+                }
+            }
+
+            if (!hasAnyPending) {
+                history = sortedByDate;
+            }
+
+            TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
+            visitData.put("Oczekujace", pending);
+            visitData.put("Historia", history);
+
+            return ResponseEntity.ok(visitData);
+
+
         }
 
         return ResponseEntity.badRequest().body("Nie znaleziono doktora");
-
     }
 
 
