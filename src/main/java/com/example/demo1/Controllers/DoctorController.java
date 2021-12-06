@@ -54,6 +54,7 @@ public class DoctorController {
             edited.setCity(user.getCity());
             edited.setStreet(user.getStreet());
             edited.setLast_name(user.getLastName());
+            edited.setPostal_code(user.getPostalCode());
             patientRepository.save(edited);
         }
 
