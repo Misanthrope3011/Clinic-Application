@@ -58,7 +58,7 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .antMatchers("/signUp","/contact", "/prices", "/getSchedule", "/findAll","/news","/savePatient", "/saveReceptionist", "/saveDoctor", "/createDoctors").permitAll()
                         .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
                         .antMatchers("/patient/pendingVisits/**").hasAnyRole("DOCTOR", "PATIENT")
-                        .antMatchers("/doctor/editVisit/**", "/doctor/getPatient/**", "/doctor/editPatientProfile").hasAnyRole("DOCTOR", "PATIENT", "ADMIN")
+                        .antMatchers("/doctor/editVisit/**", "/doctor/getPatient/**", "/doctor/editPatientProfile", "/doctor/deletePatient/**").hasAnyRole("DOCTOR", "PATIENT", "ADMIN")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/patient/**").hasRole("PATIENT")
                         .antMatchers("/doctor/**").hasRole("DOCTOR")
