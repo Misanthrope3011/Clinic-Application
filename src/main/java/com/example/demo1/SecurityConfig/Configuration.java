@@ -37,36 +37,25 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-     /*  http.csrf().disable()
-                .cors()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/welcome", "/signUp","/findAll", "/signSomething", "/signIn", "/savePatient", "signInSample", "currentLogged").permitAll()
-                .antMatchers("/patient/**").hasRole("PATIENT")
-                .antMatchers("/doctor/**").hasRole("DOCTOR")
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/receptionist/**").hasRole("RECEPTIONIST")
-                .anyRequest().authenticated()
-                .and()
-                .logout()
-                .permitAll();
-*/
+
                 http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedRequest).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/signIn").permitAll()
-                .antMatchers("/signUp","/contact", "/prices", "/getSchedule", "/findAll","/news","/savePatient", "/saveReceptionist", "/saveDoctor", "/createDoctors").permitAll()
-                        .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
+                .antMatchers("/signUp","/findByPESEL","/savePatient",
+                        "/saveReceptionist", "/saveDoctor", "/contact",
+                        "/prices", "/news","/savePatient").permitAll()
+                        .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "DOCTOR")
                         .antMatchers("/patient/pendingVisits/**").hasAnyRole("DOCTOR", "PATIENT")
-                        .antMatchers("/doctor/editVisit/**", "/doctor/getPatient/**", "/doctor/editPatientProfile", "/doctor/deletePatient/**").hasAnyRole("DOCTOR", "PATIENT", "ADMIN")
+                        .antMatchers("/doctor/editVisit/**",
+                                "/doctor/getPatient/**", "/doctor/editPatientProfile",
+                                "/doctor/deletePatient/**").hasAnyRole("DOCTOR", "ADMIN")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/patient/**").hasRole("PATIENT")
                         .antMatchers("/doctor/**").hasRole("DOCTOR")
-                        .antMatchers("receptionist/**").hasRole("RECEPTIONIST")
                 .anyRequest().authenticated();
 
                 http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
     }
 
 

@@ -16,7 +16,6 @@ import java.util.*;
 @Setter
 public class User implements UserDetails {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -25,9 +24,13 @@ public class User implements UserDetails {
     String encoded_password;
     String sign_up_date;
     String email;
-    boolean is_expired;
-    boolean is_active;
     UserRole userRole;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user")
+    private Patient patient;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Doctor doctor;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
@@ -52,11 +55,6 @@ public class User implements UserDetails {
         super();
     }
 
-    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user")
-    private Patient patient;
-
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
-    private Doctor doctor;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -96,4 +94,10 @@ public class User implements UserDetails {
     public String getUsername() {
         return username;
     }
+
+
+    boolean is_expired;
+    boolean is_active;
+
+
 }

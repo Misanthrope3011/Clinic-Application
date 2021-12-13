@@ -48,6 +48,9 @@ public class PatientController {
         return ResponseEntity.ok(new ResponseMessages("Siema"));
     }
 
+
+
+
     @GetMapping("/pendingVisits/{id}")
     ResponseEntity getMedicalVisits(@PathVariable Long id) {
         Patient patient = patientRepository.findById(id).orElse(null);
@@ -191,9 +194,7 @@ public class PatientController {
 
     @PostMapping("/registerVisit")
     ResponseEntity getFormVisitAppointment(@RequestBody VisitDTO visit) {
-
         Doctor doctor = doctorRepository.findById(visit.getDoctor_id()).orElse(null);
-
         List<MedicalVisit> visits = doctor.getPatient_visits();
         List<LocalDateTime> dates = visits.stream().map(MedicalVisit::getStartDate)
                                         .sorted().collect(Collectors.toList());
@@ -201,10 +202,13 @@ public class PatientController {
         String hour = visit.getVisit_start().split(":")[0];
         String minute = visit.getVisit_start().split(":")[1];
 
-        LocalDateTime dateOfVisit = LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour), Integer.parseInt(minute)));
-
+        LocalDateTime dateOfVisit = LocalDateTime.of(visit.getDay().toInstant().
+                atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour),
+                Integer.parseInt(minute)));
         for (LocalDateTime busyDates: dates) {
-            if(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour), Integer.parseInt(minute))).compareTo(busyDates) == 0) {
+            if(LocalDateTime.of(visit.getDay().toInstant().
+                    atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour),
+                    Integer.parseInt(minute))).compareTo(busyDates) == 0) {
                 return ResponseEntity.badRequest().body("Zajety termin");
             }
         }
@@ -217,10 +221,11 @@ public class PatientController {
         patientVisit.setPaid(false);
         patientVisit.setDeleteRequest(false);
         String[] hourMinute = visit.getVisit_start().split(":");
-        patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));
+        patientVisit.setStartDate(LocalDateTime.of(visit.getDay().toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate(),
+                LocalTime.of(Integer.parseInt(hourMinute[0]), Integer.parseInt(hourMinute[1]))));
 
         return ResponseEntity.ok(medicalVisitRepository.save(patientVisit));
-
     }
 
 

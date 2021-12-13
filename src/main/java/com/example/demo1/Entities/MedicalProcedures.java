@@ -27,6 +27,7 @@ public class MedicalProcedures {
     @OneToMany(mappedBy = "medicalProcedure")
     List<MedicalVisit> visitForProcedure;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
     Specialization specialization;

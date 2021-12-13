@@ -12,6 +12,8 @@ import com.example.demo1.Services.*;
 import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,10 +56,11 @@ public class Controller {
     SpecializationRepository specializationRepository;
     SampleRepository userRepository;
     MedicalProcedure medicalProcedure;
+    VisitRepository visitRepository;
     @Autowired
     UserDetailService userDetailService;
     PasswordEncoder encoder;
-    JWToken jwtUtils;
+    JWToken token;
 
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -67,9 +70,9 @@ public class Controller {
     }
 
     @GetMapping("/getAllPatients")
-    public ResponseEntity<List<Patient>> getAllPatient() {
+    public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam (value = "page", defaultValue = "0") Integer page, @RequestParam (value = "size", defaultValue = "5") Integer size) {
 
-        return ResponseEntity.ok(patientRepository.findAll());
+        return ResponseEntity.ok(patientRepository.findAll(PageRequest.of(0,5)));
     }
 
     @GetMapping("/getSpecializationList")
@@ -89,9 +92,14 @@ public class Controller {
         return ResponseEntity.ok("Mordo mondo");
     }
 
-    @GetMapping("/getMedicalProcedures")
-    ResponseEntity<List<MedicalProcedures>> getProceudres() {
-        return ResponseEntity.ok(medicalProcedure.findAll());
+    @GetMapping("/getMedicalProcedures/{id}")
+    ResponseEntity<List<MedicalProcedures>> getProceudres(@PathVariable Long id) {
+
+        if(id == null) {
+            id = doctorRepository.findAll().get(0).getId();
+        }
+
+        return ResponseEntity.ok(Objects.requireNonNull(doctorRepository.findById(id).orElse(null)).getDoctor_specialization().getProcedures());
     }
     
     @GetMapping("/news")
@@ -118,8 +126,6 @@ public class Controller {
         return examinationService.getExaminations();
     }
 
-
-
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody Credentials loginRequest) {
 /*
@@ -128,7 +134,7 @@ public class Controller {
                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword(), grantedAuthority));
 
        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwt = token.generateJwtToken(authentication);
 
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -140,29 +146,30 @@ public class Controller {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwt = token.generateJwtToken(authentication);
 
         User userDetails = (User) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        if(roles.get(0).equals("ROLE_PATIENT")) {
-            return ResponseEntity.ok(new LoginResponse(jwt,
-                    userDetails.getId(),
-                    userDetails.getUsername(),
-                    userDetails.getEmail(),
-                    userDetails.getPatient(),
-                    roles));
-        } else if(roles.get(0).equals("ROLE_DOCTOR")) {
-            return ResponseEntity.ok(new LoginResponse(jwt,
-                    userDetails.getId(),
-                    userDetails.getUsername(),
-                    userDetails.getEmail(),
-                    userDetails.getDoctor(),
-                    roles));
-        } else if (roles.get(0).equals("ROLE_ADMIN")) {
-            return ResponseEntity.ok(new LoginResponse(jwt, "ADMIN", roles));
+        switch (roles.get(0)) {
+            case "ROLE_PATIENT":
+                return ResponseEntity.ok(new LoginResponse(jwt,
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        userDetails.getPatient(),
+                        roles));
+            case "ROLE_DOCTOR":
+                return ResponseEntity.ok(new LoginResponse(jwt,
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        userDetails.getDoctor(),
+                        roles));
+            case "ROLE_ADMIN":
+                return ResponseEntity.ok(new LoginResponse(jwt, "ADMIN", roles));
         }
         return ResponseEntity.badRequest().body("Nie znaleziono odpowiedniej roli");
     }
@@ -172,11 +179,12 @@ public class Controller {
 
 
           if (userRepository.existsByUsername(signUpRequest.getEmail())) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new MessageResponse("Email is already taken!"));
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Email is already taken!"));
 
-          }
+        }
+
 
         if(signUpRequest.getEmail() != null) {
 
@@ -221,11 +229,11 @@ public class Controller {
         return contactFormService.addNewContactForm(contactForm);
     }
 
-
     @GetMapping("/currentLogged")
     public Principal user(Principal user) {
         return user;
     }
+
 
     @PostMapping("/savePatient")
     public ResponseEntity hello(@RequestBody PatientDTO patient) {
@@ -270,11 +278,6 @@ public class Controller {
     @GetMapping("/findAll")
     List<User> findAll() {
         return sampleRepository.findAll();
-    }
-
-    @GetMapping("/getSchedule")
-    ResponseEntity<Doctor> getHisWorkHours() {
-        return ResponseEntity.ok(doctorRepository.findById((long)6).get());
     }
 
     @GetMapping("/getDoctorList")

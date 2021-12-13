@@ -4,6 +4,7 @@ import com.example.demo1.DTOs.DoctorDTO;
 import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.*;
+import com.example.demo1.MessageResponse;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
@@ -11,6 +12,10 @@ import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +46,28 @@ public class DoctorController {
                 .map(Patient::getId).orElse(null)));
        // sampleRepository.deleteById(id);
         return ResponseEntity.ok("Usunieto");
+    }
+
+
+    @PostMapping("/findByPESEL")
+    ResponseEntity okay(@RequestBody String PESEL) {
+        return ResponseEntity.ok(List.of(patientRepository.findByPESEL(PESEL).orElseThrow()));
+    }
+
+    @GetMapping("/getTodayVisits/{id}")
+    ResponseEntity getTodayVisits(@PathVariable Long id){
+
+        Doctor doctor = doctorRepository.findById(id).orElse(null);
+
+        if(doctor != null) {
+            return ResponseEntity.ok(doctor.getPatient_visits().stream()
+                    .filter(e -> e.getStartDate().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
+                    .collect(Collectors.toList()));
+        }
+
+
+
+        return ResponseEntity.badRequest().body(new MessageResponse("Nie znaleziono danego doktora ani jego wizyt"));
     }
 
     @PutMapping("/editPatientProfile")
@@ -103,8 +130,10 @@ public class DoctorController {
     }
 
     @GetMapping("/pendingVisits/{id}")
-    ResponseEntity getPendingVisits(@PathVariable Long id) {
-
+    ResponseEntity getPendingVisits(@PathVariable Long id,  @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "3") int size)
+    {
+        page--;
         Doctor doctor = doctorRepository.findById(id).orElse(null);
         List<MedicalVisit> pending = new ArrayList<>();
         List<MedicalVisit> history = new ArrayList<>();
@@ -130,12 +159,12 @@ public class DoctorController {
             }
 
             TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
-            visitData.put("Oczekujace", pending);
-            visitData.put("Historia", history);
+                visitData.put("Oczekujace", pending);
+                visitData.put("Historia", history);
+
+
 
             return ResponseEntity.ok(visitData);
-
-
         }
 
         return ResponseEntity.badRequest().body("Nie znaleziono doktora");
@@ -188,7 +217,7 @@ public class DoctorController {
             return ResponseEntity.badRequest().body("Nie znaleziono");
     }
 
-    @GetMapping("/getDeleteRequests")
+    @GetMapping("/getAbandoned")
     ResponseEntity deleteRequests() {
 
         return ResponseEntity.ok(visitRepository.findAll().stream()
