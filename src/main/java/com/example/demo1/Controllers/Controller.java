@@ -72,7 +72,7 @@ public class Controller {
     @GetMapping("/getAllPatients")
     public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam (value = "page", defaultValue = "0") Integer page, @RequestParam (value = "size", defaultValue = "5") Integer size) {
 
-        return ResponseEntity.ok(patientRepository.findAll(PageRequest.of(0,5)));
+        return ResponseEntity.ok(patientRepository.findAll(PageRequest.of(page, size)));
     }
 
     @GetMapping("/getSpecializationList")
@@ -177,12 +177,10 @@ public class Controller {
     @PostMapping("/signUp")
     public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) {
 
-
           if (userRepository.existsByUsername(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Email is already taken!"));
-
         }
 
 

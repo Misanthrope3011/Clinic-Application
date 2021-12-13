@@ -24,10 +24,10 @@ public class ExaminationService {
         List<MedicalProcedures> medicalProcedures = new ArrayList<>();
 
         examinations = new HashMap<>();
-       examinations.put("Gastroskopia", 280.0);
-       examinations.put("By-pass zoladkowy", 1400.0);
-       examinations.put("Sesja psychologiczna", 110.0);
-       examinations.put("Porada bariatryczna", 130.0);
+        examinations.put("Gastroskopia", 280.0);
+        examinations.put("By-pass zoladkowy", 1400.0);
+        examinations.put("Sesja psychologiczna", 110.0);
+        examinations.put("Porada bariatryczna", 130.0);
     }
 
     public ResponseEntity <List<MedicalProcedures>> getProcedures() {

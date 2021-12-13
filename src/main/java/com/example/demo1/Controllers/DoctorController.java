@@ -10,6 +10,7 @@ import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
+import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,8 +37,6 @@ public class DoctorController {
     private PatientRepository patientRepository;
     private VisitRepository visitRepository;
 
-
-
     @DeleteMapping("deletePatient/{id}")
     ResponseEntity deleteDoctor(@PathVariable Long id) {
         Patient patient = Objects.requireNonNull(patientRepository.findById(id).orElse(null));
@@ -48,6 +47,10 @@ public class DoctorController {
         return ResponseEntity.ok("Usunieto");
     }
 
+    @GetMapping("/getNumberOfPatients")
+    ResponseEntity getSize() {
+        return ResponseEntity.ok(patientRepository.findAll().size());
+    }
 
     @PostMapping("/findByPESEL")
     ResponseEntity okay(@RequestBody String PESEL) {
