@@ -2,6 +2,7 @@ package com.example.demo1.Controllers;
 
 import com.example.demo1.*;
 import com.example.demo1.DTOs.PatientDTO;
+import com.example.demo1.EmailVerification.EmailSender;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Enums.UserRole;
 import com.example.demo1.JWT.JWToken;
@@ -9,27 +10,25 @@ import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.*;
 import com.example.demo1.Services.*;
-import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.relation.RoleNotFoundException;
+import javax.mail.MessagingException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,10 +36,12 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
+@Getter
+@Setter
 @CrossOrigin(origins = "http://localhost:4200")
 public class Controller {
 
-    @Autowired
+    EmailSender sender;
     AuthenticationManager authenticationManager;
     UserInfoService userInfoService;
     SampleRepository sampleRepository;
@@ -57,49 +58,53 @@ public class Controller {
     SampleRepository userRepository;
     MedicalProcedure medicalProcedure;
     VisitRepository visitRepository;
-    @Autowired
     UserDetailService userDetailService;
     PasswordEncoder encoder;
     JWToken token;
 
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> getPageInfo() {
+    public ResponseEntity<List<User>> getPageInfo() throws MessagingException {
 
+        sender.sendMail("carrion.30.11@gmail.com", "przychodniahealthcare@gmail.com","Siema");
         return ResponseEntity.ok(userInfoService.findAllUsers());
     }
 
     @GetMapping("/getAllPatients")
-    public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam (value = "page", defaultValue = "0") Integer page, @RequestParam (value = "size", defaultValue = "5") Integer size) {
-
+    public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam (value = "page", defaultValue = "0") Integer page,
+                                                       @RequestParam (value = "size", defaultValue = "5") Integer size) {
         return ResponseEntity.ok(patientRepository.findAll(PageRequest.of(page, size)));
     }
+
+
 
     @GetMapping("/getSpecializationList")
     public ResponseEntity<List<Specialization>> getSpecializations() {
         return ResponseEntity.ok(specializationRepository.findAll());
     }
-    @GetMapping("/createDoctors")
-    public ResponseEntity setDoctor() {
-        User user = new User();
-        user.setUserRole(UserRole.ROLE_DOCTOR);
-        user.setEmail("doctorq@doctor.com");
-        user.setEncoded_password(bCryptPasswordEncoder.encode("samplePassword"));
-        Doctor doctor = new Doctor();
-        sampleRepository.save(user);
-        doctor.setUser(user);
-        doctorRepository.save(doctor);
-        return ResponseEntity.ok("Mordo mondo");
+
+    @PostMapping("/fileUpload/{id}")
+    ResponseEntity file(@RequestBody byte[] image, @PathVariable Long id){
+
+        User user = sampleRepository.findById(id).orElse(null);
+        if(user != null) {
+            user.setImage(image);
+            sampleRepository.save(user);
+            return ResponseEntity.ok(image);
+        }
+
+        return ResponseEntity.badRequest().body(new MessageResponse("Nie znaleziono usera"));
     }
 
     @GetMapping("/getMedicalProcedures/{id}")
     ResponseEntity<List<MedicalProcedures>> getProceudres(@PathVariable Long id) {
 
         if(id == null) {
-            id = doctorRepository.findAll().get(0).getId();
+            id = doctorRepository.findAll().get(Integer.parseInt(String.valueOf(id))).getId();
         }
 
-        return ResponseEntity.ok(Objects.requireNonNull(doctorRepository.findById(id).orElse(null)).getDoctor_specialization().getProcedures());
+        return ResponseEntity.ok(Objects.requireNonNull(doctorRepository.findById(id).
+                orElse(null)).getDoctor_specialization().getProcedures());
     }
     
     @GetMapping("/news")
@@ -109,7 +114,6 @@ public class Controller {
         page = page - 1;
 
         Integer size = newsRepository.findAll().size();
-
         List<News> allNews = newsRepository.findAll();
         Collections.reverse(allNews);
 
@@ -124,6 +128,14 @@ public class Controller {
     @GetMapping("/prices")
     public ResponseEntity<HashMap<String, Double>> getExaminations() {
         return examinationService.getExaminations();
+    }
+
+    @GetMapping("/retrieveImage/{id}")
+    public ResponseEntity getImage(@PathVariable Long id) {
+        User doctor = sampleRepository.findById(id).orElse(null);
+        if(doctor != null)
+            return ResponseEntity.ok(doctor);
+        return ResponseEntity.badRequest().body(new MessageResponse("Unexpected Error"));
     }
 
     @PostMapping("/signIn")
@@ -141,6 +153,7 @@ public class Controller {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
  */
+
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -160,14 +173,16 @@ public class Controller {
                         userDetails.getUsername(),
                         userDetails.getEmail(),
                         userDetails.getPatient(),
-                        roles));
+                        roles,
+                        userDetails.getImage()));
             case "ROLE_DOCTOR":
                 return ResponseEntity.ok(new LoginResponse(jwt,
                         userDetails.getId(),
                         userDetails.getUsername(),
                         userDetails.getEmail(),
                         userDetails.getDoctor(),
-                        roles));
+                        roles,
+                        userDetails.getImage()));
             case "ROLE_ADMIN":
                 return ResponseEntity.ok(new LoginResponse(jwt, "ADMIN", roles));
         }
@@ -175,7 +190,7 @@ public class Controller {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) {
+    public ResponseEntity<?> registerUser(@RequestBody User signUpRequest) throws MessagingException {
 
           if (userRepository.existsByUsername(signUpRequest.getEmail())) {
             return ResponseEntity
@@ -214,7 +229,15 @@ public class Controller {
 
                 }
             }
+
             userRepository.save(user);
+            String token = UUID.randomUUID().toString();
+            VerificationToken verificationToken = new VerificationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(60),
+                    userRepository.findByUsername(user.getEmail()).orElse(null));
+            tokenRepository.save(verificationToken);
+            sender.sendMail(signUpRequest.getEmail(), "Rejestracja konta w przychodni","Witamy \n" +
+                    "<a href = http://localhost:8080/signUp?token=" + token + "> kliknij tutaj </a>"
+                    );
             return ResponseEntity.ok(userDetailService.loadUserByUsername(user.getEmail()));
         }
         return ResponseEntity.ok("Email pojebalo");
@@ -254,11 +277,6 @@ public class Controller {
         return ResponseEntity.badRequest().body("Nie znaleziono powiazanego Usera");
     }
 
-    @GetMapping("/savePatient")
-    public ResponseEntity<List<Patient>> hello() {
-        return ResponseEntity.ok(patientRepository.findAll());
-    }
-
     @GetMapping("/signUp")
     ResponseEntity<VerificationToken>  newUser(@RequestParam ("token") String token) {
         VerificationToken findUserToken = tokenRepository.findByToken(token);
@@ -268,7 +286,7 @@ public class Controller {
         }
 
         findUserToken.getUser().set_active(true);
-
+        findUserToken.setConfirmationTime(LocalDateTime.now());
         return new ResponseEntity<VerificationToken>( findUserToken, HttpStatus.OK);
     }
 
@@ -282,5 +300,11 @@ public class Controller {
     ResponseEntity<List<Doctor>> getAll(){
         return ResponseEntity.ok(doctorRepository.findAll());
     }
+
+    @GetMapping("/getImage/{id}")
+     org.springframework.http.ResponseEntity<byte[]> getUser(@PathVariable Long id){
+        return ResponseEntity.ok(sampleRepository.findById(id).orElse(null).getImage());
+    }
+
 
 }

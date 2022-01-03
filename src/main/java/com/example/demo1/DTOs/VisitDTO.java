@@ -19,4 +19,5 @@ public class VisitDTO {
     private Date day;
     private String description;
     private Boolean isPaid;
+    private Boolean hasTookPlace;
 }

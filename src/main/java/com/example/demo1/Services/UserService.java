@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 @Getter
 @Setter
-public class UserService implements UserInterface {
+public class UserService {
 
     @Autowired
     SampleRepository sampleRepository;
@@ -33,19 +33,5 @@ public class UserService implements UserInterface {
     EmailSender emailSender;
 
 
-    @Override
-    public User registerNewUsserAccount(com.example.demo1.Entities.User user) {
 
-        boolean isEmailExists = sampleRepository.findByUsername(user.getUsername()).isPresent();
-
-      if(!isEmailExists) {
-          user.setEncoded_password(passwordEncoder.encode(user.getEncoded_password()));
-          sampleRepository.save(user);
-          verificationToken = new VerificationToken(UUID.randomUUID().toString(), LocalDateTime.now(), LocalDateTime.now().plusMinutes(20), user);
-          emailSender.sendEmail(user.getUsername(), verificationToken.getToken());
-          tokenRepository.save(verificationToken);
-      }
-
-        return user;
-    }
 }

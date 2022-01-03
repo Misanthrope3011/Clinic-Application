@@ -10,13 +10,9 @@ import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
-import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +39,6 @@ public class DoctorController {
 
         patientRepository.deleteById(Objects.requireNonNull(patientRepository.findById(patient.getId())
                 .map(Patient::getId).orElse(null)));
-       // sampleRepository.deleteById(id);
         return ResponseEntity.ok("Usunieto");
     }
 
@@ -54,7 +49,7 @@ public class DoctorController {
 
     @PostMapping("/findByPESEL")
     ResponseEntity okay(@RequestBody String PESEL) {
-        return ResponseEntity.ok(List.of(patientRepository.findByPESEL(PESEL).orElseThrow()));
+        return ResponseEntity.ok(List.of(patientRepository.findByPESEL(PESEL).orElseThrow(null)));
     }
 
     @GetMapping("/getTodayVisits/{id}")
@@ -67,8 +62,6 @@ public class DoctorController {
                     .filter(e -> e.getStartDate().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
                     .collect(Collectors.toList()));
         }
-
-
 
         return ResponseEntity.badRequest().body(new MessageResponse("Nie znaleziono danego doktora ani jego wizyt"));
     }
@@ -91,6 +84,7 @@ public class DoctorController {
         return ResponseEntity.ok(edited);
     }
 
+
     @PutMapping("/editVisit/{id}")
     ResponseEntity editVisitInfo(@PathVariable Long id, @RequestBody VisitDTO visitDTO) {
 
@@ -99,6 +93,7 @@ public class DoctorController {
         if(visit != null) {
             visit.setPaid(visitDTO.getIsPaid());
             visit.setDescription(visitDTO.getDescription());
+            visit.setHasTookPlace(visitDTO.getHasTookPlace());
 
             return ResponseEntity.ok(visitRepository.save(visit));
         }
@@ -170,7 +165,7 @@ public class DoctorController {
             return ResponseEntity.ok(visitData);
         }
 
-        return ResponseEntity.badRequest().body("Nie znaleziono doktora");
+        return new ResponseEntity("Nie znaleziono doktora", HttpStatus.NOT_FOUND);
     }
 
 
@@ -183,7 +178,7 @@ public class DoctorController {
             return ResponseEntity.ok(visit);
         }
 
-        return ResponseEntity.badRequest().body("Nie znaleziono wizyty");
+        return new ResponseEntity("Nie znaleziono wizyty", HttpStatus.NOT_FOUND);
 
     }
 
@@ -211,20 +206,20 @@ public class DoctorController {
        MedicalVisit visit =  visitRepository.findById(id).orElse(null);
 
         if(visit == null) {
-            ResponseEntity.badRequest().body("Wizyta nie istnieje");
+            return new ResponseEntity("Nie wizyty", HttpStatus.NOT_FOUND);
         } else {
             visitRepository.delete(visit);
 
             return ResponseEntity.ok("Usunieto");
         }
-            return ResponseEntity.badRequest().body("Nie znaleziono");
     }
 
     @GetMapping("/getAbandoned")
     ResponseEntity deleteRequests() {
 
         return ResponseEntity.ok(visitRepository.findAll().stream()
-        .filter(e -> e.isDeleteRequest()).collect(Collectors.toList()));
+                .filter(MedicalVisit::isDeleteRequest)
+                .collect(Collectors.toList()));
     }
 
 }

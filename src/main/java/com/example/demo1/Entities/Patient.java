@@ -46,8 +46,7 @@ public class Patient {
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ratings_id", referencedColumnName = "id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
     private List<DoctorRatings> ratings_by_patient;
 
     @JsonIgnore

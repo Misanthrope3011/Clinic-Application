@@ -1,5 +1,6 @@
 package com.example.demo1.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
@@ -16,12 +17,14 @@ public class DoctorRatings {
     Double rating;
     String rating_explanation;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     Doctor doctor;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "patient_id", referencedColumnName = "id",insertable = false, updatable = false)
+    @JoinColumn(name = "patient_id", referencedColumnName = "id")
     Patient patient;
 
 }

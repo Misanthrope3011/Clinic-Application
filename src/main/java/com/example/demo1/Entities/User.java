@@ -26,7 +26,7 @@ public class User implements UserDetails {
     String email;
     UserRole userRole;
 
-    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Patient patient;
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
@@ -87,7 +87,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -98,6 +98,9 @@ public class User implements UserDetails {
 
     boolean is_expired;
     boolean is_active;
+
+    @Lob
+    private byte[] image;
 
 
 }

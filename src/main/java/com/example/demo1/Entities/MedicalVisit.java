@@ -36,6 +36,7 @@ public class MedicalVisit {
     boolean isPaid;
 
     boolean deleteRequest;
+    boolean hasTookPlace;
 
 
 

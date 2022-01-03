@@ -7,8 +7,11 @@ import com.example.demo1.Services.UserDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -44,11 +47,11 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
                 .authorizeRequests().antMatchers("/signIn").permitAll()
                 .antMatchers("/signUp","/findByPESEL","/savePatient",
                         "/saveReceptionist", "/saveDoctor", "/contact",
-                        "/prices", "/news","/savePatient").permitAll()
+                        "/prices", "/news","/savePatient", "/home", "/fileUpload", "/getDoctorList").permitAll()
                         .antMatchers("/getAllPatients").hasAnyRole("ADMIN", "DOCTOR")
-                        .antMatchers("/patient/pendingVisits/**").hasAnyRole("DOCTOR", "PATIENT")
+                        .antMatchers("/patient/pendingVisits/**", "/doctor/getPatient/**").hasAnyRole("DOCTOR", "PATIENT", "ADMIN")
                         .antMatchers("/doctor/editVisit/**",
-                                "/doctor/getPatient/**", "/doctor/editPatientProfile",
+                                "/doctor/editPatientProfile",
                                 "/doctor/deletePatient/**").hasAnyRole("DOCTOR", "ADMIN")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .antMatchers("/patient/**").hasRole("PATIENT")
@@ -81,29 +84,23 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
     }
 
 
-    @Bean
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-
-        mailSender.setUsername("clinic@gmail.com");
-        mailSender.setPassword("password");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
-        return mailSender;
-    }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(encoder());
     }
-    
+
+
+    @Bean
+    public SimpleMailMessage emailTemplate()
+    {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("user@gmail.com");
+        message.setFrom("admin@gmail.com");
+        message.setSubject("Important email");
+        message.setText("FATAL - Application crash. Save your job !!");
+        return message;
+    }
 
     @Bean
     public PasswordEncoder encoder() {
