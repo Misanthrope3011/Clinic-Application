@@ -48,7 +48,7 @@ public class DoctorController {
     }
 
     @PostMapping("/findByPESEL")
-    ResponseEntity okay(@RequestBody String PESEL) {
+    ResponseEntity findByPESEL(@RequestBody String PESEL) {
         return ResponseEntity.ok(List.of(patientRepository.findByPESEL(PESEL).orElseThrow(null)));
     }
 
@@ -206,7 +206,7 @@ public class DoctorController {
        MedicalVisit visit =  visitRepository.findById(id).orElse(null);
 
         if(visit == null) {
-            return new ResponseEntity("Nie wizyty", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Nie ma takiej wizyty", HttpStatus.NOT_FOUND);
         } else {
             visitRepository.delete(visit);
 

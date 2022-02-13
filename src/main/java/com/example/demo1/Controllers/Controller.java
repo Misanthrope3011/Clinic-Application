@@ -13,13 +13,11 @@ import com.example.demo1.Services.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,11 +43,10 @@ public class Controller {
     AuthenticationManager authenticationManager;
     UserInfoService userInfoService;
     SampleRepository sampleRepository;
-    UserService userService;
     TokenRepository tokenRepository;
     PatientRepository patientRepository;
     DoctorRepository doctorRepository;
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    PasswordEncoder bCryptPasswordEncoder;
     RoleRepository roleRepository;
     NewsRepository newsRepository;
     ContactFormService contactFormService;
@@ -140,20 +137,6 @@ public class Controller {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody Credentials loginRequest) {
-/*
-
-       Authentication authentication = authenticationManager.authenticate(
-               new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword(), grantedAuthority));
-
-       SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = token.generateJwtToken(authentication);
-
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
- */
-
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -235,7 +218,8 @@ public class Controller {
             VerificationToken verificationToken = new VerificationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(60),
                     userRepository.findByUsername(user.getEmail()).orElse(null));
             tokenRepository.save(verificationToken);
-            sender.sendMail(signUpRequest.getEmail(), "Rejestracja konta w przychodni","Witamy \n" +
+            sender.sendMail(signUpRequest.getEmail(), "Rejestracja konta w przychodni","Dziekujęmy za aktywowanie" +
+                            "konta w naszej klinice. Aby aktywowac konto \n" +
                     "<a href = http://localhost:8080/signUp?token=" + token + "> kliknij tutaj </a>"
                     );
             return ResponseEntity.ok(userDetailService.loadUserByUsername(user.getEmail()));

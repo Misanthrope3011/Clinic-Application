@@ -31,8 +31,6 @@ public class ControllerTest {
     @LocalServerPort
     private int port;
 
-
-
     @Autowired
     private SampleRepository restTemplate;
 

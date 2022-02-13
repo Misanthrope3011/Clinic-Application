@@ -7,11 +7,7 @@ import com.example.demo1.Services.UserDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,9 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.Properties;
-
 
 @EnableWebSecurity
 @AllArgsConstructor
@@ -88,18 +81,6 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(encoder());
-    }
-
-
-    @Bean
-    public SimpleMailMessage emailTemplate()
-    {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("user@gmail.com");
-        message.setFrom("admin@gmail.com");
-        message.setSubject("Important email");
-        message.setText("FATAL - Application crash. Save your job !!");
-        return message;
     }
 
     @Bean

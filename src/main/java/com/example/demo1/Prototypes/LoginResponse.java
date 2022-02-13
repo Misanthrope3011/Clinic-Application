@@ -2,11 +2,9 @@ package com.example.demo1.Prototypes;
 
 import com.example.demo1.Entities.Doctor;
 import com.example.demo1.Entities.Patient;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
 @NoArgsConstructor

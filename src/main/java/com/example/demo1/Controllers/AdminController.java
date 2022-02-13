@@ -47,20 +47,5 @@ public class AdminController {
 
         return ResponseEntity.ok(doctorRepository.findAll());
     }
-/*
-
-    @PostMapping("/signUpDoctor")
-    public ResponseEntity<Doctor> signUp(@RequestBody DoctorDTO doctorDTO) {
-        Doctor doctor = new Doctor();
-        doctor.setUser(sampleRepository.findById(doctorDTO.getUser_id()).orElse(null));
-        doctor.setLast_name(doctorDTO.getLast_name());
-        doctor.setName(doctorDTO.getName());
-        doctor.setDoctor_specialization(specializationRepository.findById(doctorDTO.getSpecialization_id()).orElse(null));
-        doctorRepository.save(doctor);
-
-        return ResponseEntity.ok(doctor);
-    }
-*/
-
 
 }

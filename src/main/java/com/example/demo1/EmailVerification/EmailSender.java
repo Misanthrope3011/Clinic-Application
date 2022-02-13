@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -29,14 +28,6 @@ public class EmailSender {
 
     @Autowired
     private JavaMailSender mailSender;
-
-    @Autowired
-    private SimpleMailMessage preConfiguredMessage;
-
-    public static final String[] subjects = new String []{
-            "email verification", "account cancellacion", "other stuff"
-    };
-
 
     @Async
     public void sendMail(String to, String subject, String body) throws MessagingException {

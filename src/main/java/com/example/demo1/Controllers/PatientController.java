@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -113,21 +115,20 @@ public class PatientController {
     ResponseEntity<LoginResponse> editInfo(@RequestBody UserDto user) {
         User edited = sampleRepository.findById(user.getId()).orElse(null);
 
-        if(user.getFirstName() != null)
-           edited.getPatient().setName(user.getFirstName());
-        edited.getPatient().setHome_number(user.getHomeNumber());
-        edited.getPatient().setPESEL(user.getPESEL());
-        edited.getPatient().setCity(user.getCity());
-        edited.getPatient().setStreet(user.getStreet());
-        edited.getPatient().setLast_name(user.getLastName());
-        edited.getPatient().setPostal_code(user.getPostalCode());
+        edited.getPatient().setName(user.getFirstName() != null ? user.getFirstName() : edited.getPatient().getName());
+        edited.getPatient().setHome_number(user.getHomeNumber() != null ? user.getHomeNumber() : edited.getPatient().getHome_number());
+        edited.getPatient().setPESEL(user.getPESEL() != null ? user.getPESEL() : edited.getPatient().getPESEL());
+        edited.getPatient().setCity(user.getCity() != null ? user.getCity() : edited.getPatient().getCity());
+        edited.getPatient().setStreet(user.getStreet() != null ? user.getStreet() : edited.getPatient().getStreet());
+        edited.getPatient().setLast_name(user.getLastName() != null ? user.getLastName() : edited.getPatient().getLast_name());
+        edited.getPatient().setPostal_code(user.getPostalCode() != null ? user.getPostalCode() : edited.getPatient().getLast_name());
         sampleRepository.save(edited);
 
        return ResponseEntity.ok(new LoginResponse(edited.getId(), edited.getEmail(), edited.getPatient(), List.of(UserRole.ROLE_PATIENT.name())));
     }
 
     @GetMapping("/getDoctorRates")
-    ResponseEntity caluclateRating() {
+    ResponseEntity calculateRating() {
         List<Doctor> doctor = doctorRepository.findAll();
 
         List<Double> allRatings = new ArrayList<>();
@@ -223,8 +224,15 @@ public class PatientController {
     ResponseEntity getAvailableHours(@RequestBody VisitDTO visitDTO) {
         List<LocalTime> hoursThatDay = new ArrayList<>();
         List<LocalTime> listOfHours = new ArrayList<>();
-        LocalTime localTime = LocalTime.of(9, 0);
+        LocalTime localTime;
 
+        if(visitDTO.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfMonth()
+        == LocalDateTime.now().getDayOfMonth() && visitDTO.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        .getMonth().equals(LocalDateTime.now().getMonth())) {
+            localTime = LocalTime.of(LocalDateTime.now().getHour() + 1, LocalDateTime.now().getMinute() > 30 ? 0 : 30);
+        } else {
+            localTime = LocalTime.of(9, 0);
+        }
         while (localTime.getHour() < 17) {
             listOfHours.add(localTime);
             localTime = localTime.plusMinutes(30);
@@ -262,8 +270,6 @@ public class PatientController {
             rateToUpdate.setRating(rate.getRate());
             return ResponseEntity.ok(ratesRepository.save(rateToUpdate));
         }
-
-
     }
 
 }

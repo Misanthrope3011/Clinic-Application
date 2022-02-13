@@ -4,9 +4,10 @@ package com.example.demo1.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -22,13 +23,25 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @NotBlank
+    @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 charakters")
     private String name;
+    @NotBlank
+    @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 charakters")
     private String last_name;
+    @NotBlank
+    @Pattern(regexp = "^[0-9]{11}", message = "PESEL consists of 11 digits")
     private String PESEL;
+    @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 characters")
     private String city;
+    @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 characters")
     private String street;
+    @Size(min = 1, max = 5, message = "Minimum 1 character, max 5 characters")
     private String home_number;
+    @Pattern(regexp = "^[0-9]{2}[-][0-9]{3}$", message = "Postal code has xx-xxx format")
     private String postal_code;
+    @Size(min = 7, max = 10, message = "Phone numbers has fixed lengths and can have minimum 7 digits an maximum 10 digits")
+    String phone;
 
     public Patient(Long id, String name, String last_name, String PESEL, String city, String street, String home_number, String postal_code, User user) {
         this.id = id;

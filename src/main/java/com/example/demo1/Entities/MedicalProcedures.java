@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +23,11 @@ public class MedicalProcedures {
 
     String name;
     Double price;
+
+    byte[] image;
+
+    @Size(min = 10, message = "Description is too short")
+    String description;
 
     @JsonIgnore
     @OneToMany(mappedBy = "medicalProcedure")

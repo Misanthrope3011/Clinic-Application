@@ -22,12 +22,4 @@ public class UserInfoService {
         return sampleRepository.getById(id);
     }
 
-    public void addUserToDatabase(User user) {
-        sampleRepository.save(user);
-    }
-
-    public void deleteUserFromDatabase(Long id ) {
-        sampleRepository.delete(this.findUserById(id));
-    }
-
 }

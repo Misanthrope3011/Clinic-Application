@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.*;
 
 
@@ -23,6 +25,9 @@ public class User implements UserDetails {
     String username;
     String encoded_password;
     String sign_up_date;
+
+    @NotNull
+    @Size(min = 5, max = 30, message = "Email must have at least 5 characters and maximum 30 characters")
     String email;
     UserRole userRole;
 
@@ -87,7 +92,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class User implements UserDetails {
 
 
     boolean is_expired;
-    boolean is_active;
+    boolean is_active = true;
 
     @Lob
     private byte[] image;
