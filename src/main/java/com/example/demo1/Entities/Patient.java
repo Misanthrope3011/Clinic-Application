@@ -31,6 +31,7 @@ public class Patient {
     private String last_name;
     @NotBlank
     @Pattern(regexp = "^[0-9]{11}", message = "PESEL consists of 11 digits")
+    @Column(unique = true)
     private String PESEL;
     @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 characters")
     private String city;

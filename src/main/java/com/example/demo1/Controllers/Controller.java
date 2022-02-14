@@ -6,13 +6,19 @@ import com.example.demo1.EmailVerification.EmailSender;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Enums.UserRole;
 import com.example.demo1.JWT.JWToken;
+import com.example.demo1.PDFGenerator.PDFWriter;
 import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.*;
 import com.example.demo1.Services.*;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -27,6 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -58,6 +66,7 @@ public class Controller {
     UserDetailService userDetailService;
     PasswordEncoder encoder;
     JWToken token;
+    PDFWriter writePdf;
 
 
     @GetMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -259,6 +268,16 @@ public class Controller {
             return new ResponseEntity<Patient>(patientEntity, HttpStatus.OK);
         }
         return ResponseEntity.badRequest().body("Nie znaleziono powiazanego Usera");
+    }
+
+    @GetMapping(path ="/getPdf")
+    public ResponseEntity getPdfContent() throws DocumentException, IOException {
+
+        writePdf.writePdf("XD");
+        ClassPathResource pdfFile = new ClassPathResource("examination.pdf");
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdfFile.getInputStream()));
     }
 
     @GetMapping("/signUp")

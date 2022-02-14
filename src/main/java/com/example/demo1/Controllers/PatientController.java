@@ -7,7 +7,6 @@ import com.example.demo1.Helpers.VisitManagmentHelper;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.*;
-import com.example.demo1.Services.VisitFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,6 @@ public class PatientController {
     private VisitRepository medicalVisitRepository;
     private MedicalProcedure medicalProcedure;
     private DoctorRepository doctorRepository;
-    private VisitFilter visitFilter;
     private RatesRepository ratesRepository;
     private VisitManagmentHelper managmentHelper;
 

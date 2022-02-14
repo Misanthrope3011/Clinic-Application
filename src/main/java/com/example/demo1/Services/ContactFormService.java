@@ -24,7 +24,8 @@ public class ContactFormService {
 
     public ResponseEntity<List<ContactForm>> getTodayForms() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        List<ContactForm> todaySentForms = contactFormRepository.findAll().stream().filter(e -> e.getDate().toString().equals(LocalDateTime.now().format(formatter)))
+        List<ContactForm> todaySentForms = contactFormRepository.findAll().stream().filter(e ->
+                e.getDate().toString().equals(LocalDateTime.now().format(formatter)))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(todaySentForms);
