@@ -271,9 +271,10 @@ public class Controller {
     }
 
     @GetMapping(path ="/getPdf")
-    public ResponseEntity getPdfContent() throws DocumentException, IOException {
+    public ResponseEntity getPdfContent() throws Exception {
 
         writePdf.writePdf("XD");
+
         ClassPathResource pdfFile = new ClassPathResource("examination.pdf");
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)

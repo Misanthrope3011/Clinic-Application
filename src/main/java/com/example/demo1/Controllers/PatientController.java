@@ -35,12 +35,6 @@ public class PatientController {
     private RatesRepository ratesRepository;
     private VisitManagmentHelper managmentHelper;
 
-    @GetMapping("/welcome")
-    ResponseEntity<ResponseMessages> checkAuthorities() {
-
-        return ResponseEntity.ok(new ResponseMessages("Siema"));
-    }
-
     @GetMapping("/pendingVisits/{id}")
     ResponseEntity getMedicalVisits(@PathVariable Long id) {
         Patient patient  = patientRepository.findById(id).orElse(null);
