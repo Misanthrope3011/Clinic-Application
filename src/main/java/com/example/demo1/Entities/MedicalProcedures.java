@@ -38,4 +38,6 @@ public class MedicalProcedures {
     @JoinColumn(referencedColumnName = "id")
     Specialization specialization;
 
+    byte[] procedureDocument;
+
 }

@@ -3,16 +3,14 @@ package com.example.demo1.Controllers;
 import com.example.demo1.DTOs.*;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Enums.UserRole;
+import com.example.demo1.Helpers.DoctorRatesHelper;
 import com.example.demo1.Helpers.VisitManagmentHelper;
 import com.example.demo1.Prototypes.LoginResponse;
-import com.example.demo1.Prototypes.ResponseMessages;
 import com.example.demo1.Repositories.*;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -33,13 +31,14 @@ public class PatientController {
     private MedicalProcedure medicalProcedure;
     private DoctorRepository doctorRepository;
     private RatesRepository ratesRepository;
-    private VisitManagmentHelper managmentHelper;
+    private VisitManagmentHelper managementHelper;
+    private DoctorRatesHelper ratesHelper;
 
     @GetMapping("/pendingVisits/{id}")
     ResponseEntity getMedicalVisits(@PathVariable Long id) {
         Patient patient  = patientRepository.findById(id).orElse(null);
         if(patient != null)
-            return ResponseEntity.ok(managmentHelper.getVisits(patient));
+            return ResponseEntity.ok(managementHelper.getVisits(patient));
         return ResponseEntity.badRequest().body("Blad przy pobieraniu danych");
     }
 
@@ -50,7 +49,6 @@ public class PatientController {
         if(patient.getVisits() == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono pacjenta");
         }
-
 
             List<MedicalVisit> paidVisits = patient.getVisits()
                     .stream().filter(MedicalVisit::isPaid)
@@ -93,8 +91,8 @@ public class PatientController {
     }
 
     @PostMapping("/getProfile")
-    ResponseEntity getPatient(@RequestBody Prototype id) {
-        User user = sampleRepository.findAll().get(id.getId().intValue());
+    ResponseEntity getPatient(@RequestBody Long id) {
+        User user = sampleRepository.findAll().get(id.intValue());
         if(user != null) {
             return ResponseEntity.ok(user);
         }
@@ -123,46 +121,22 @@ public class PatientController {
     ResponseEntity calculateRating() {
         List<Doctor> doctor = doctorRepository.findAll();
 
-        List<Double> allRatings = new ArrayList<>();
 
-        doctor.forEach(e -> allRatings.add(e.getDoctor_ratings()
-                .stream()
-                .mapToDouble(lam -> lam.getRating())
-                .average().orElse(0)));
-
-        return ResponseEntity.ok(allRatings);
+        return ResponseEntity.ok(ratesHelper.getDoctorAverageRates(doctor));
     }
 
     @GetMapping("/getUserRates/{id}")
     ResponseEntity getRates(@PathVariable Long id) {
         Patient patient = patientRepository.findById(id).orElse(null);
 
+        if(patient == null) {
+            return new ResponseEntity("Patient does not exists", HttpStatus.NOT_FOUND);
+        }
 
-        List<DoctorRatings> sortedByDoctor = patient.getRatings_by_patient();
+        List<DoctorRatings> sortedByDoctor = ratesHelper.sortRatesByDoctorId(patient);
 
+       return ResponseEntity.ok(ratesHelper.formRatesVector(sortedByDoctor, doctorRepository));
 
-       sortedByDoctor.sort(new Comparator<DoctorRatings>() {
-           @Override
-           public int compare(DoctorRatings h1, DoctorRatings h2) {
-               return h1.getDoctor().getId().compareTo(h2.getDoctor().getId());
-           }
-       });
-
-       for (int i = 0; i < doctorRepository.findAll().size(); i++) {
-           boolean exists = false;
-           for (int j = 0; j < sortedByDoctor.size(); j++) {
-               if (sortedByDoctor.get(j).getDoctor().getId().equals(doctorRepository.findAll().get(i).getId())) {
-                   exists = true;
-                   break;
-               }
-           }
-
-           if(!exists) {
-               sortedByDoctor.add(i, null);
-           }
-       }
-
-       return ResponseEntity.ok(sortedByDoctor);
     }
 
     @PostMapping("/registerVisit")

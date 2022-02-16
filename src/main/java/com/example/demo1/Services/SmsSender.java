@@ -11,6 +11,7 @@ public class SmsSender {
     public static final String ACCOUNT_SID = System.getenv("TWILIO_KEY");
     public static final String AUTH_TOKEN = System.getenv("TWILIO_SECRET");
     public static final String NUMBER_PREFIX = "+48";
+
     public SmsSender() {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
     }

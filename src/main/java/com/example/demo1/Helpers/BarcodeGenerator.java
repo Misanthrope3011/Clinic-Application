@@ -37,7 +37,7 @@ public class BarcodeGenerator {
 
         barcode.append((10 - ((3 * odd + even) % 10)) % 10);
 
-        BitMatrix bitMatrix = barcodeWriter.encode(barcode.toString(), BarcodeFormat.EAN_13, 300, 150);
+        BitMatrix bitMatrix = barcodeWriter.encode(barcode.toString(), BarcodeFormat.EAN_13, 180, 90);
 
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }

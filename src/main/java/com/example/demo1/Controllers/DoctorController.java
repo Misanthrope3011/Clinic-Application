@@ -161,7 +161,6 @@ public class DoctorController {
                 visitData.put("Historia", history);
 
 
-
             return ResponseEntity.ok(visitData);
         }
 
