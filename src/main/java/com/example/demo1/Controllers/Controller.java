@@ -1,6 +1,5 @@
 package com.example.demo1.Controllers;
 
-import com.example.demo1.*;
 import com.example.demo1.DTOs.PatientDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.PDFGenerator.PDFWriter;
@@ -63,7 +62,7 @@ public class Controller {
             return ResponseEntity.ok(image);
         }
 
-        return ResponseEntity.badRequest().body(new MessageResponse("Nie znaleziono usera"));
+        return new ResponseEntity("Nie znaleziono usera", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/getMedicalProcedures/{id}")
@@ -105,7 +104,7 @@ public class Controller {
         User doctor = sampleRepository.findById(id).orElse(null);
         if(doctor != null)
             return ResponseEntity.ok(doctor);
-        return ResponseEntity.badRequest().body(new MessageResponse("Unexpected Error"));
+        return new ResponseEntity("Blad przy pobieraniu obrazu", HttpStatus.NOT_FOUND);
     }
 
 
@@ -144,7 +143,7 @@ public class Controller {
 
             return new ResponseEntity<Patient>(patientEntity, HttpStatus.OK);
         }
-        return ResponseEntity.badRequest().body("Nie znaleziono powiazanego Usera");
+        return new ResponseEntity("No matching user found", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path ="/getPdf")
@@ -177,7 +176,7 @@ public class Controller {
 
     @GetMapping("/getImage/{id}")
      org.springframework.http.ResponseEntity<byte[]> getUser(@PathVariable Long id){
-        return ResponseEntity.ok(sampleRepository.findById(id).orElse(null).getImage());
+        return ResponseEntity.ok(Objects.requireNonNull(sampleRepository.findById(id).orElse(null)).getImage());
     }
 
 

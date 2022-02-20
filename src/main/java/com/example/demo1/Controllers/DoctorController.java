@@ -4,7 +4,6 @@ import com.example.demo1.DTOs.DoctorDTO;
 import com.example.demo1.DTOs.UserDto;
 import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.*;
-import com.example.demo1.MessageResponse;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.SampleRepository;
@@ -63,7 +62,7 @@ public class DoctorController {
                     .collect(Collectors.toList()));
         }
 
-        return ResponseEntity.badRequest().body(new MessageResponse("Nie znaleziono danego doktora ani jego wizyt"));
+        return new ResponseEntity("Nie znaleziono danego doktora ani jego wizyt", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/editPatientProfile")
@@ -98,7 +97,7 @@ public class DoctorController {
             return ResponseEntity.ok(visitRepository.save(visit));
         }
 
-        return ResponseEntity.badRequest().body("Nie istnieje ta wizyta");
+        return new ResponseEntity("Wizytya nie istnieje", HttpStatus.NOT_FOUND);
     }
     @PutMapping("/editProfile")
     ResponseEntity editInfo(@RequestBody DoctorDTO user) {
@@ -164,7 +163,7 @@ public class DoctorController {
             return ResponseEntity.ok(visitData);
         }
 
-        return new ResponseEntity("Nie znaleziono doktora", HttpStatus.NOT_FOUND);
+        return new ResponseEntity("Doctor not found", HttpStatus.NOT_FOUND);
     }
 
 
@@ -177,7 +176,7 @@ public class DoctorController {
             return ResponseEntity.ok(visit);
         }
 
-        return new ResponseEntity("Nie znaleziono wizyty", HttpStatus.NOT_FOUND);
+        return new ResponseEntity("Visit not found", HttpStatus.NOT_FOUND);
 
     }
 
@@ -205,11 +204,11 @@ public class DoctorController {
        MedicalVisit visit =  visitRepository.findById(id).orElse(null);
 
         if(visit == null) {
-            return new ResponseEntity("Nie ma takiej wizyty", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Visit not found", HttpStatus.NOT_FOUND);
         } else {
             visitRepository.delete(visit);
 
-            return ResponseEntity.ok("Usunieto");
+            return ResponseEntity.ok("Visit has been deleted");
         }
     }
 

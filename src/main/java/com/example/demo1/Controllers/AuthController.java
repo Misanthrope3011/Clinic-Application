@@ -6,7 +6,6 @@ import com.example.demo1.Entities.User;
 import com.example.demo1.Entities.VerificationToken;
 import com.example.demo1.Enums.UserRole;
 import com.example.demo1.JWT.JWToken;
-import com.example.demo1.MessageResponse;
 import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.RoleRepository;
@@ -84,7 +83,7 @@ public class AuthController {
             case "ROLE_ADMIN":
                 return ResponseEntity.ok(new LoginResponse(jwt, "ADMIN", roles));
         }
-        return ResponseEntity.badRequest().body("Nie znaleziono odpowiedniej roli");
+        return ResponseEntity.badRequest().body("User has no matching role");
     }
 
     @PostMapping("/signUp")
@@ -93,7 +92,7 @@ public class AuthController {
         if (userRepository.existsByUsername(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Email is already taken!"));
+                    .body(("Email is already taken!"));
         }
 
         if(signUpRequest.getEmail() != null) {

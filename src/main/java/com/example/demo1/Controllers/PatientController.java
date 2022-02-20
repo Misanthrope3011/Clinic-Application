@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -47,7 +48,7 @@ public class PatientController {
     ResponseEntity getDebts(@PathVariable Long id) {
         Patient patient = patientRepository.findById(id).orElse(null);
         if(patient.getVisits() == null) {
-            return ResponseEntity.badRequest().body("Nie znaleziono pacjenta");
+            return new ResponseEntity("Nie znaleziono pacjenta", HttpStatus.NOT_FOUND);
         }
 
             List<MedicalVisit> paidVisits = patient.getVisits()
@@ -71,7 +72,7 @@ public class PatientController {
 
         Patient patient = patientRepository.findById(id).orElse(null);
         if(patient.getVisits() == null) {
-            return ResponseEntity.badRequest().body("Wystapil blad przy pobieraniu danych pacjenta");
+            return new ResponseEntity("Nie znaleziono wizyty", HttpStatus.NOT_FOUND);
         }
 
         totalMoney = patient.getVisits().stream()
@@ -97,7 +98,7 @@ public class PatientController {
             return ResponseEntity.ok(user);
         }
 
-        return ResponseEntity.badRequest().body("Nie znaleziono");
+        return new ResponseEntity("Wystapil blad serwera", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -152,7 +153,7 @@ public class PatientController {
             if(LocalDateTime.of(visit.getDay().toInstant().
                     atZone(ZoneId.systemDefault()).toLocalDate(), LocalTime.of(Integer.parseInt(hour),
                     Integer.parseInt(minute))).compareTo(busyDates) == 0) {
-                return ResponseEntity.badRequest().body("Zajety termin");
+                return new ResponseEntity("Zajety termin", HttpStatus.NOT_ACCEPTABLE);
             }
         }
 
@@ -192,9 +193,15 @@ public class PatientController {
         List<LocalTime> listOfHours = new ArrayList<>();
         LocalTime localTime;
 
-        if(visitDTO.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfMonth()
-        == LocalDateTime.now().getDayOfMonth() && visitDTO.getDay().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        .getMonth().equals(LocalDateTime.now().getMonth())) {
+        int requestedDay = visitDTO.getDay().
+                toInstant().atZone(ZoneId.systemDefault()).
+                toLocalDate().getDayOfMonth();
+
+        Month requestedMonth =  visitDTO.getDay()
+                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                .getMonth();
+
+        if(requestedDay == LocalDateTime.now().getDayOfMonth() && requestedMonth.equals(LocalDateTime.now().getMonth())) {
             localTime = LocalTime.of(LocalDateTime.now().getHour() + 1, LocalDateTime.now().getMinute() > 30 ? 0 : 30);
         } else {
             localTime = LocalTime.of(9, 0);

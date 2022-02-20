@@ -1,6 +1,5 @@
 package com.example.demo1.Helpers;
 
-
 import com.example.demo1.Entities.Doctor;
 import com.example.demo1.Entities.DoctorRatings;
 import com.example.demo1.Entities.Patient;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

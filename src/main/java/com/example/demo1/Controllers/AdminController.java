@@ -1,16 +1,12 @@
 package com.example.demo1.Controllers;
 
-import com.example.demo1.DTOs.DoctorDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Repositories.*;
-import com.example.demo1.UserNotFoundException;
-import com.sun.mail.iap.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

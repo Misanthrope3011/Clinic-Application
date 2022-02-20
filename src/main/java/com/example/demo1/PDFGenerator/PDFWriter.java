@@ -1,7 +1,6 @@
 package com.example.demo1.PDFGenerator;
 
 import com.example.demo1.Entities.MedicalVisit;
-import com.example.demo1.Entities.Patient;
 import com.example.demo1.Helpers.BarcodeGenerator;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
@@ -10,20 +9,14 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.imageio.ImageIO;
-import javax.swing.border.Border;
 
 @Service
 @Getter
@@ -58,7 +51,7 @@ public class PDFWriter {
 
 
         Paragraph paragraph = new Paragraph();
-        paragraph.add("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+        paragraph.add(visit.getDescription());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(barcodeGenerator.generateEAN13BarcodeImage(), "png", baos);
