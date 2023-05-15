@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.awt.*;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -20,27 +18,27 @@ public class Doctor {
     Long id;
 
     String name;
-    String last_name;
+    String lastName;
 
     @JsonIgnore
     @JoinColumn(name = "deparment_id")
     @ManyToOne
-    Department doctor_department;
+    Department doctorDepartment;
 
     @ManyToOne
     @JoinColumn(name = "specialization_id", referencedColumnName = "id")
-    Specialization doctor_specialization;
+    Specialization doctorSpecialization;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "doctor_id", cascade = CascadeType.ALL)
-    List<MedicalVisit> patient_visits;
+    @OneToMany(mappedBy = "doctorId", cascade = CascadeType.ALL)
+    List<MedicalVisit> getPatientVisits;
 
     @OneToMany(mappedBy = "doctor")
-    List <DoctorRatings> doctor_ratings;
+    List <DoctorRatings> doctorRatings;
 
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
-    List<WorkSchedule> work_schedule;
+    List<WorkSchedule> workSchedule;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)

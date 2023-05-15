@@ -33,6 +33,7 @@ public class ExaminationService {
     public ResponseEntity <List<MedicalProcedures>> getProcedures() {
         return ResponseEntity.ok(medicalProceduresRepository.findAll());
     }
+
     public ResponseEntity<HashMap<String, Double>> getExaminations() {
         return ResponseEntity.ok(examinations);
     }

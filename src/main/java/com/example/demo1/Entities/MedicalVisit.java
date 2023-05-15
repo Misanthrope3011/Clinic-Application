@@ -16,14 +16,16 @@ public class MedicalVisit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
     LocalDateTime startDate;
     LocalDateTime endDate;
     String description;
+    boolean isPaid;
+    boolean deleteRequest;
+    boolean hasTookPlace;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
-    Doctor doctor_id;
+    Doctor doctorId;
 
     @ManyToOne
     @JoinColumn(name = "procedure_id", referencedColumnName = "id")
@@ -31,12 +33,9 @@ public class MedicalVisit {
 
     @ManyToOne
     @JoinColumn(name = "patient_id",referencedColumnName = "id")
-    Patient patient_id;
+    Patient patientId;
 
-    boolean isPaid;
 
-    boolean deleteRequest;
-    boolean hasTookPlace;
 
 
 

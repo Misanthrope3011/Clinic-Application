@@ -1,7 +1,6 @@
 package com.example.demo1.Entities;
 
 import com.example.demo1.Enums.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,16 +19,18 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String username;
-    String encoded_password;
-    String sign_up_date;
+    private String username;
+    private String encodedPassword;
+    private String signUpDate;
+    private UserRole userRole;
+    private boolean isExpired;
+    private boolean isActive = true;
 
     @NotNull
     @Size(min = 5, max = 30, message = "Email must have at least 5 characters and maximum 30 characters")
-    String email;
-    UserRole userRole;
+    private String email;
 
     @OneToOne (fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Patient patient;
@@ -43,15 +44,13 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-
-
     public User(User user) {
         this.email = user.email;
-        this.is_active = user.is_active;
-        this.encoded_password = user.encoded_password;
-        this.sign_up_date = user.sign_up_date;
+        this.isActive = user.isActive;
+        this.encodedPassword = user.encodedPassword;
+        this.signUpDate = user.signUpDate;
         this.username = user.username;
-        this.is_expired = user.is_expired;
+        this.isExpired = user.isExpired;
         this.id = user.id;
         this.userRole = user.userRole;
     }
@@ -63,7 +62,6 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         ArrayList<GrantedAuthority> grantedAuthorityArrayList = new ArrayList<>();
         grantedAuthorityArrayList.add(new SimpleGrantedAuthority(userRole.name()));
 
@@ -72,7 +70,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return encoded_password;
+        return encodedPassword;
     }
 
     @Override
@@ -100,12 +98,7 @@ public class User implements UserDetails {
         return username;
     }
 
-
-    boolean is_expired;
-    boolean is_active = true;
-
     @Lob
     private byte[] image;
-
 
 }

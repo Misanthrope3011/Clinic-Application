@@ -20,24 +20,21 @@ public class MedicalProcedures {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    String name;
-    Double price;
-
-    byte[] image;
+    private String name;
+    private Double price;
+    private byte[] image;
 
     @Size(min = 10, message = "Description is too short")
-    String description;
+    private String description;
 
     @JsonIgnore
     @OneToMany(mappedBy = "medicalProcedure")
-    List<MedicalVisit> visitForProcedure;
+    private List<MedicalVisit> visitForProcedure;
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
-    Specialization specialization;
-
-    byte[] procedureDocument;
+    private Specialization specialization;
+    private byte[] procedureDocument;
 
 }

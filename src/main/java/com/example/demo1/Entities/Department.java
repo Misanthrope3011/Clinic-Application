@@ -17,14 +17,14 @@ public class Department {
     Long id_column;
 
     String name;
-    String opening_hour;
-    String closing_hour;
+    String openingHour;
+    String closingHour;
     String city;
     String street;
     String homeNumber;
 
-    @OneToMany(mappedBy = "doctor_department")
-    List<Doctor> department_stuff;
+    @OneToMany(mappedBy = "doctorDepartment")
+    List<Doctor> departmentStaff;
 
 }
 

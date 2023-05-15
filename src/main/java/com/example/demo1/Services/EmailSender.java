@@ -1,9 +1,8 @@
-package com.example.demo1.EmailVerification;
+package com.example.demo1.Services;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -13,12 +12,12 @@ import javax.mail.internet.MimeMessage;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class EmailSender {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+    private final String CONFIRM_MESSAGE_SUBJECT = "Rejestracja konta w przychodni";
 
     @Async
     public void sendMail(String to, String subject, String body) throws MessagingException {
@@ -30,5 +29,6 @@ public class EmailSender {
         helper.setText(body, true);
         mailSender.send(message);
     }
+
 }
 

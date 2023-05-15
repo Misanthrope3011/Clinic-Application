@@ -1,12 +1,12 @@
-package com.example.demo1.Controllers;
+package com.example.demo1.controller;
 
-import com.example.demo1.DTOs.DoctorDTO;
-import com.example.demo1.DTOs.UserDto;
-import com.example.demo1.DTOs.VisitDTO;
+import com.example.demo1.dto.DoctorDTO;
+import com.example.demo1.dto.UserDto;
+import com.example.demo1.dto.VisitDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
-import com.example.demo1.Repositories.SampleRepository;
+import com.example.demo1.Repositories.UserRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class DoctorController {
 
     @Autowired
-    private SampleRepository sampleRepository;
+    private UserRepository sampleRepository;
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
@@ -57,7 +57,7 @@ public class DoctorController {
         Doctor doctor = doctorRepository.findById(id).orElse(null);
 
         if(doctor != null) {
-            return ResponseEntity.ok(doctor.getPatient_visits().stream()
+            return ResponseEntity.ok(doctor.getGetPatientVisits().stream()
                     .filter(e -> e.getStartDate().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
                     .collect(Collectors.toList()));
         }
@@ -105,7 +105,7 @@ public class DoctorController {
       if (user.getFirstName() != null)
                 edited.getDoctor().setName(user.getFirstName());
         if(user.getLastName() != null)
-                edited.getDoctor().setLast_name(user.getLastName());
+                edited.getDoctor().setLastName(user.getLastName());
 
         sampleRepository.save(edited);
 
@@ -137,7 +137,7 @@ public class DoctorController {
         boolean hasAnyPending = false;
         if (doctor != null) {
 
-            List<MedicalVisit> sortedByDate = doctor.getPatient_visits()
+            List<MedicalVisit> sortedByDate = doctor.getGetPatientVisits()
                     .stream()
                     .sorted(Comparator.comparing(MedicalVisit::getStartDate))
                     .collect(Collectors.toList());

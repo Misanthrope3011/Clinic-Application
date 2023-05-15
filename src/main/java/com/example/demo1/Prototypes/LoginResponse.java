@@ -12,23 +12,14 @@ import java.util.List;
 @Setter
 public class LoginResponse {
 
-    public LoginResponse(Long id, String email, Patient patient, List<String> roles,  byte[] image) {
-        this.id = id;
-        this.email = email;
-        this.patient = patient;
-        this.roles = roles;
-        this.image = image;
-    }
-
-
-    byte[] image;
-    String token;
-    Long id;
-    String username;
-    String email;
-    Patient patient;
-    Doctor doctor;
-    List<String> roles;
+    private byte[] image;
+    private String token;
+    private Long id;
+    private String username;
+    private String email;
+    private Patient patient;
+    private Doctor doctor;
+    private List<String> roles;
 
 
     public LoginResponse(String token, Long id, String username, String email, Patient patient, List<String> roles, byte[] image) {
@@ -52,16 +43,6 @@ public class LoginResponse {
         this.image = image;
 
     }
-
-    public LoginResponse(String token, Long id, String username, String email, Patient patient, List<String> roles) {
-        this.token = token;
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.patient = patient;
-        this.roles = roles;
-    }
-
 
     public LoginResponse(Long id, String email, Patient patient, List<String> roles) {
         this.id = id;

@@ -1,16 +1,13 @@
 package com.example.demo1.Helpers;
-import com.example.demo1.DTOs.VisitDTO;
 import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Entities.Patient;
 import com.example.demo1.Repositories.PatientRepository;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -53,7 +50,6 @@ public class VisitManagmentHelper {
 
             visitData.put("Oczekujace", pending);
             visitData.put("Historia", history);
-
         }
 
         return visitData;

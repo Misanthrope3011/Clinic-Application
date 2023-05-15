@@ -2,7 +2,7 @@ package com.example.demo1.Services;
 
 
 import com.example.demo1.Entities.User;
-import com.example.demo1.Repositories.SampleRepository;
+import com.example.demo1.Repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserInfoService {
 
-    SampleRepository sampleRepository;
+    private final UserRepository sampleRepository;
 
     public List<User> findAllUsers(){
         return sampleRepository.findAll();

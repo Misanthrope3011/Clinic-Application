@@ -1,6 +1,6 @@
-package com.example.demo1.Controllers;
+package com.example.demo1.controller;
 
-import com.example.demo1.DTOs.PatientDTO;
+import com.example.demo1.dto.PatientDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.PDFGenerator.PDFWriter;
 import com.example.demo1.Repositories.*;
@@ -28,14 +28,14 @@ import java.util.*;
 public class Controller {
 
     UserInfoService userInfoService;
-    SampleRepository sampleRepository;
+    UserRepository sampleRepository;
     PatientRepository patientRepository;
     DoctorRepository doctorRepository;
     NewsRepository newsRepository;
     ContactFormService contactFormService;
     ExaminationService examinationService;
     SpecializationRepository specializationRepository;
-    SampleRepository userRepository;
+    UserRepository userRepository;
     MedicalProcedure medicalProcedure;
     VisitRepository visitRepository;
     PDFWriter writePdf;
@@ -73,7 +73,7 @@ public class Controller {
         }
 
         return ResponseEntity.ok(Objects.requireNonNull(doctorRepository.findById(id).
-                orElse(null)).getDoctor_specialization().getProcedures());
+                orElse(null)).getDoctorSpecialization().getProcedures());
     }
     
     @GetMapping("/news")

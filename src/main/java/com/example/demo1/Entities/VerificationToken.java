@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class VerificationToken {
-    private static final int EXPIRATION = 60 * 24;
+    private static final int EXPIRATION_TIME_MINUTES = 60 * 24;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

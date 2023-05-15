@@ -21,13 +21,12 @@ public class SmsSender {
         String smsContent = "Przypomnienie o wizycie, która odbedzie sie " +
                 visitInfo.getStartDate() +
                 " " + "u doktora " +
-                visitInfo.getDoctor_id().getName() +
-                " " + visitInfo.getDoctor_id().getLast_name();
+                visitInfo.getDoctorId().getName() +
+                " " + visitInfo.getDoctorId().getLastName();
         Message message = Message.creator(
                 new com.twilio.type.PhoneNumber("(848) 420-9531"),
-                new com.twilio.type.PhoneNumber( visitInfo.getPatient_id().getPhone() != null ? NUMBER_PREFIX + visitInfo.getPatient_id().getPhone(): "0"),
+                new com.twilio.type.PhoneNumber( visitInfo.getPatientId().getPhone() != null ? NUMBER_PREFIX + visitInfo.getPatientId().getPhone(): "0"),
                 smsContent)
                 .create();
-
     }
 }

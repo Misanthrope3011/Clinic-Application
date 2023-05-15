@@ -1,9 +1,10 @@
 package com.example.demo1.Helpers;
 
-import com.example.demo1.EmailVerification.EmailSender;
+import com.example.demo1.Services.EmailSender;
 import com.example.demo1.Entities.MedicalVisit;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.SmsSender;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -19,21 +20,17 @@ import java.util.HashSet;
 @EnableAsync
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class BackgroundTasks {
 
-    @Autowired
-    EmailSender emailSender;
-    @Autowired
-    VisitRepository visitRepository;
-    @Autowired
-    SmsSender smsSender;
+    private final EmailSender emailSender;
+    private final VisitRepository visitRepository;
+    private final SmsSender smsSender;
 
     @Async
     @Scheduled(cron = "0 0 10 * * ?")
     public void sendRemainders() throws InterruptedException {
-
         HashSet<MedicalVisit> tommorowVisits = new HashSet<>();
-
         visitRepository.findAll()
         .forEach(e -> {
             if ((e.getStartDate().toLocalDate().getDayOfYear()) - 1 == LocalDateTime.now().getDayOfYear()) {
@@ -41,14 +38,9 @@ public class BackgroundTasks {
             }
         });
 
-        tommorowVisits.forEach(f -> {
+        tommorowVisits.forEach(medicalVisit -> {
             try {
-                emailSender.sendMail(f.getPatient_id().getUser().getEmail(), "Powiadomienie o wizycie",
-                        "Chcialbym poinformowac o"  +
-                        "jutrzejszej wizycie, ktora odbedzie sie " + f.getStartDate().toString() + " u "
-                                + f.getDoctor_id().getName() + " " + f.getDoctor_id().getLast_name() + "<br>" +
-                        "Wiadomosc zostala wygenerowana automatycznie, prosimy nie odpowiadac");
-                smsSender.sendSms(f.getPatient_id().getPhone(), f);
+                createReminderMessageTemplate(medicalVisit);
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -56,6 +48,13 @@ public class BackgroundTasks {
 
     }
 
-
+    private void createReminderMessageTemplate(MedicalVisit f) throws MessagingException {
+        emailSender.sendMail(f.getPatientId().getUser().getEmail(), "Powiadomienie o wizycie",
+                "Chcialbym poinformowac o"  +
+                "jutrzejszej wizycie, ktora odbedzie sie " + f.getStartDate().toString() + " u "
+                        + f.getDoctorId().getName() + " " + f.getDoctorId().getLastName() + "<br>" +
+                "Wiadomosc zostala wygenerowana automatycznie, prosimy nie odpowiadac");
+        smsSender.sendSms(f.getPatientId().getPhone(), f);
+    }
 
 }

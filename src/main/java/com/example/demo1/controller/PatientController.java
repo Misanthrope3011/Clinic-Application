@@ -1,6 +1,7 @@
-package com.example.demo1.Controllers;
+package com.example.demo1.controller;
 
-import com.example.demo1.DTOs.*;
+import com.example.demo1.Services.DoctorUtilsService;
+import com.example.demo1.dto.*;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Enums.UserRole;
 import com.example.demo1.Helpers.DoctorRatesHelper;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -27,13 +27,14 @@ public class PatientController {
 
 
     private PatientRepository patientRepository;
-    private SampleRepository sampleRepository;
+    private UserRepository sampleRepository;
     private VisitRepository medicalVisitRepository;
     private MedicalProcedure medicalProcedure;
     private DoctorRepository doctorRepository;
     private RatesRepository ratesRepository;
     private VisitManagmentHelper managementHelper;
     private DoctorRatesHelper ratesHelper;
+    private DoctorUtilsService doctorUtilsService;
 
     @GetMapping("/pendingVisits/{id}")
     ResponseEntity getMedicalVisits(@PathVariable Long id) {
@@ -143,7 +144,7 @@ public class PatientController {
     @PostMapping("/registerVisit")
     ResponseEntity getFormVisitAppointment(@RequestBody VisitDTO visit) {
         Doctor doctor = doctorRepository.findById(visit.getDoctor_id()).orElse(null);
-        List<MedicalVisit> visits = doctor.getPatient_visits();
+        List<MedicalVisit> visits = doctor.getGetPatientVisits();
         List<LocalDateTime> dates = visits.stream().map(MedicalVisit::getStartDate)
                                         .sorted().collect(toList());
 
@@ -159,8 +160,8 @@ public class PatientController {
 
         MedicalVisit patientVisit = new MedicalVisit();
         patientVisit.setDescription(visit.getDescription());
-        patientVisit.setDoctor_id(doctorRepository.findById(visit.getDoctor_id()).orElse(null));
-        patientVisit.setPatient_id(patientRepository.findById(visit.getPatient_id()).orElse(null));
+        patientVisit.setDoctorId(doctorRepository.findById(visit.getDoctor_id()).orElse(null));
+        patientVisit.setPatientId(patientRepository.findById(visit.getPatient_id()).orElse(null));
         patientVisit.setMedicalProcedure(medicalProcedure.findById(visit.getId_procedure()).orElse(null));
         patientVisit.setPaid(false);
         patientVisit.setDeleteRequest(false);
@@ -188,44 +189,8 @@ public class PatientController {
     }
 
     @PostMapping("/getDoctorHours")
-    ResponseEntity getAvailableHours(@RequestBody VisitDTO visitDTO) {
-        List<LocalTime> hoursThatDay = new ArrayList<>();
-        List<LocalTime> listOfHours = new ArrayList<>();
-        LocalTime localTime;
-
-        int requestedDay = visitDTO.getDay().
-                toInstant().atZone(ZoneId.systemDefault()).
-                toLocalDate().getDayOfMonth();
-
-        Month requestedMonth =  visitDTO.getDay()
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                .getMonth();
-
-        if(requestedDay == LocalDateTime.now().getDayOfMonth() && requestedMonth.equals(LocalDateTime.now().getMonth())) {
-            localTime = LocalTime.of(LocalDateTime.now().getHour() + 1, LocalDateTime.now().getMinute() > 30 ? 0 : 30);
-        } else {
-            localTime = LocalTime.of(9, 0);
-        }
-        while (localTime.getHour() < 17) {
-            listOfHours.add(localTime);
-            localTime = localTime.plusMinutes(30);
-        }
-        Doctor doctor = doctorRepository.findById(visitDTO.getDoctor_id()).orElse(null);
-        if(doctor != null) {
-            hoursThatDay = doctor.getPatient_visits().stream()
-                    .filter(e -> e.getStartDate().getDayOfMonth() == visitDTO.getDay()
-                            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfMonth()
-                        && e.getStartDate().getMonth().toString().equals(visitDTO.getDay()
-                            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getMonth().toString())
-                    )
-                    .sorted(Comparator.comparing(MedicalVisit::getStartDate))
-                    .map(e -> e.getStartDate().toLocalTime())
-                    .collect(toList());
-        }
-        for (LocalTime time : hoursThatDay) {
-            listOfHours.removeIf(temp -> temp.compareTo(time) == 0);
-        }
-        return ResponseEntity.ok(listOfHours);
+    ResponseEntity<List<LocalTime>> getAvailableHours(@RequestBody VisitDTO visitDTO) {
+        return ResponseEntity.ok(doctorUtilsService.getDoctorAvailableHours(visitDTO));
     }
 
     @PutMapping("updateRate/{id}")

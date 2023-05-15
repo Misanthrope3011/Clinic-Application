@@ -18,7 +18,6 @@ public class ContactForm {
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
     private String lastName;
     private String phone;

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -21,7 +20,7 @@ public class WorkSchedule {
     @JoinColumn(name = "doctor_id")
     Doctor doctor;
 
-    private String start_hour;
-    private String end_hour;
+    private String startHour;
+    private String endHour;
 
 }

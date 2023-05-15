@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.example.demo1.Services.UserDetailService;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
+@NoArgsConstructor
 public class JWTAuth extends OncePerRequestFilter {
-    @Autowired
-    private JWToken token;
 
-    @Autowired
+    private JWToken token;
     private UserDetailService userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JWTAuth.class);
@@ -61,6 +61,15 @@ public class JWTAuth extends OncePerRequestFilter {
         return null;
     }
 
+    @Autowired
+    public void setToken(JWToken token) {
+        this.token = token;
+    }
+
+    @Autowired
+    public void setUserDetailsService(UserDetailService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
 }
 

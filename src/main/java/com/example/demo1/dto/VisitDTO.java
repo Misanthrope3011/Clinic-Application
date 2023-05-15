@@ -1,10 +1,9 @@
-package com.example.demo1.DTOs;
+package com.example.demo1.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter

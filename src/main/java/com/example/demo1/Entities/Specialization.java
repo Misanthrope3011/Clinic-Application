@@ -16,11 +16,11 @@ public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String specialization_name;
+    String specializationName;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "doctor_specialization")
-    List<Doctor> doctor_id;
+    @OneToMany(mappedBy = "doctorSpecialization")
+    List<Doctor> doctorId;
 
 
     @OneToMany(mappedBy = "specialization")

@@ -22,16 +22,16 @@ public class DoctorRatesHelper {
     public List<Double> getDoctorAverageRates(List <Doctor> doctor) {
         List<Double> allRatings = new ArrayList<>();
 
-        doctor.forEach(e -> allRatings.add(e.getDoctor_ratings()
+        doctor.forEach(e -> allRatings.add(e.getDoctorRatings()
                 .stream()
-                .mapToDouble(lam -> lam.getRating())
+                .mapToDouble(DoctorRatings::getRating)
                 .average().orElse(0)));
 
         return allRatings;
     }
 
     public List<DoctorRatings> sortRatesByDoctorId(Patient patient) {
-        List<DoctorRatings> sortedByDoctor = patient.getRatings_by_patient();
+        List<DoctorRatings> sortedByDoctor = patient.getGetRatingsByPatient();
 
         sortedByDoctor.sort(new Comparator<DoctorRatings>() {
             @Override

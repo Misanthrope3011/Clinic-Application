@@ -15,7 +15,7 @@ public class DoctorRatings {
     Long id;
 
     Double rating;
-    String rating_explanation;
+    String ratingExplanation;
 
     @JsonIgnore
     @ManyToOne

@@ -75,8 +75,6 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
         };
     }
 
-
-
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(encoder());

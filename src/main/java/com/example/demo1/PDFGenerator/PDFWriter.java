@@ -24,8 +24,8 @@ import javax.imageio.ImageIO;
 @AllArgsConstructor
 public class PDFWriter {
 
-    com.itextpdf.text.Document document;
-    BarcodeGenerator barcodeGenerator;
+    private com.itextpdf.text.Document document;
+    private BarcodeGenerator barcodeGenerator;
 
     public PDFWriter() throws FileNotFoundException, DocumentException {
         this.document = new Document();
@@ -44,10 +44,10 @@ public class PDFWriter {
 
 
         PdfPTable table = new PdfPTable(4);
-        table.addCell(new PdfPCell(new Paragraph(visit.getPatient_id().getName())));
-        table.addCell(new PdfPCell(new Paragraph(visit.getPatient_id().getLast_name())));
-        table.addCell(new PdfPCell(new Paragraph(visit.getPatient_id().getPESEL())));
-        table.addCell(new PdfPCell(new Paragraph(visit.getPatient_id().getCity())));
+        table.addCell(new PdfPCell(new Paragraph(visit.getPatientId().getName())));
+        table.addCell(new PdfPCell(new Paragraph(visit.getPatientId().getLast_name())));
+        table.addCell(new PdfPCell(new Paragraph(visit.getPatientId().getPESEL())));
+        table.addCell(new PdfPCell(new Paragraph(visit.getPatientId().getCity())));
 
 
         Paragraph paragraph = new Paragraph();

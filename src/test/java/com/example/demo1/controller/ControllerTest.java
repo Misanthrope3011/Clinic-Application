@@ -1,19 +1,14 @@
-package com.example.demo1.Controllers;
+package com.example.demo1.controller;
 
-import com.example.demo1.Repositories.SampleRepository;
+import com.example.demo1.Repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javassist.tools.rmi.Sample;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -32,7 +27,7 @@ public class ControllerTest {
     private int port;
 
     @Autowired
-    private SampleRepository restTemplate;
+    private UserRepository restTemplate;
 
     @Test
     public void shouldReturnDefaultMessage() throws Exception {
