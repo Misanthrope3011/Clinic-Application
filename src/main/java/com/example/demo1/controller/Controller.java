@@ -1,24 +1,28 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.dto.PatientDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.PDFGenerator.PDFWriter;
 import com.example.demo1.Repositories.*;
 import com.example.demo1.Services.*;
+import com.example.demo1.dto.PatientDTO;
+import com.example.demo1.exception.ApplicationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -27,25 +31,24 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:4200")
 public class Controller {
 
-    UserInfoService userInfoService;
-    UserRepository sampleRepository;
-    PatientRepository patientRepository;
-    DoctorRepository doctorRepository;
-    NewsRepository newsRepository;
-    ContactFormService contactFormService;
-    ExaminationService examinationService;
-    SpecializationRepository specializationRepository;
-    UserRepository userRepository;
-    MedicalProcedure medicalProcedure;
-    VisitRepository visitRepository;
-    PDFWriter writePdf;
+    private DoctorRepository doctorRepository;
+    private ContactFormService contactFormService;
+    private ExaminationService examinationService;
+    private SpecializationRepository specializationRepository;
+    private UserRepository userRepository;
+    private MedicalProcedure medicalProcedure;
+    private VisitRepository visitRepository;
+    private PDFWriter writePdf;
+    private DoctorUtilsService doctorUtilsService;
+    private UserInfoService userInfoService;
+    private PatientService patientService;
+    private NewsService newsService;
 
     @GetMapping("/getAllPatients")
-    public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam (value = "page", defaultValue = "0") Integer page,
-                                                       @RequestParam (value = "size", defaultValue = "5") Integer size) {
-        return ResponseEntity.ok(patientRepository.findAll(PageRequest.of(page, size)));
+    public ResponseEntity<Page<Patient>> getAllPatient(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                       @RequestParam(value = "size", defaultValue = "5") Integer size) {
+        return ResponseEntity.ok(patientService.getAllPatients(page, size));
     }
-
 
     @GetMapping("/getSpecializationList")
     public ResponseEntity<List<Specialization>> getSpecializations() {
@@ -53,46 +56,34 @@ public class Controller {
     }
 
     @PostMapping("/fileUpload/{id}")
-    ResponseEntity file(@RequestBody byte[] image, @PathVariable Long id){
+    public ResponseEntity<Object> file(@RequestBody byte[] image, @PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException("Error fetching user"));
+        user.setImage(image);
+        userRepository.save(user);
 
-        User user = sampleRepository.findById(id).orElse(null);
-        if(user != null) {
-            user.setImage(image);
-            sampleRepository.save(user);
-            return ResponseEntity.ok(image);
-        }
-
-        return new ResponseEntity("Nie znaleziono usera", HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(image);
     }
 
     @GetMapping("/getMedicalProcedures/{id}")
-    ResponseEntity<List<MedicalProcedures>> getProceudres(@PathVariable Long id) {
-
-        if(id == null) {
-            id = doctorRepository.findAll().get(Integer.parseInt(String.valueOf(id))).getId();
+    public ResponseEntity<Object> getProceudres(@PathVariable Long id) {
+        Optional<Doctor> doctor = doctorUtilsService.findDoctorById(id);
+        if (doctor.isPresent()) {
+            return ResponseEntity.ok().body(doctor.get().getDoctorSpecialization().getProcedures());
         }
 
-        return ResponseEntity.ok(Objects.requireNonNull(doctorRepository.findById(id).
-                orElse(null)).getDoctorSpecialization().getProcedures());
+        return ResponseEntity.badRequest().body(String.format("Resource with id %s not found", id));
     }
-    
+
     @GetMapping("/news")
-     public ResponseEntity getNews(@RequestParam ("page") Integer page, @RequestParam ("limit") Integer newsLimitOnSinglePage) {
-
-        List<News> newsOnRequestedPage = new ArrayList<>();
+    public ResponseEntity<Object> getNews(@RequestParam("page") Integer page, @RequestParam("limit") Integer newsLimitOnSinglePage) {
+        List<News> newsOnRequestedPage;
         page = page - 1;
-
-        Integer size = newsRepository.findAll().size();
-        List<News> allNews = newsRepository.findAll();
-        Collections.reverse(allNews);
-
-
-        if(size > newsLimitOnSinglePage * (page + 1))
-            newsOnRequestedPage =  allNews.subList(newsLimitOnSinglePage * page, newsLimitOnSinglePage * (page + 1));
-        else    newsOnRequestedPage =  allNews.subList(newsLimitOnSinglePage * page, size);
+        Integer requestSize = newsService.getAllNews().size();
+        List<News> allNews = newsService.getAllNews(); //TODO: rewrite custom pagination to jpa implementation
+        newsService.reverseNews(allNews);
+        newsOnRequestedPage = newsService.paginateNews(page, newsLimitOnSinglePage, requestSize, allNews);
         return ResponseEntity.ok(newsOnRequestedPage);
     }
-
 
     @GetMapping("/prices")
     public ResponseEntity<HashMap<String, Double>> getExaminations() {
@@ -100,16 +91,16 @@ public class Controller {
     }
 
     @GetMapping("/retrieveImage/{id}")
-    public ResponseEntity getImage(@PathVariable Long id) {
-        User doctor = sampleRepository.findById(id).orElse(null);
-        if(doctor != null)
-            return ResponseEntity.ok(doctor);
-        return new ResponseEntity("Blad przy pobieraniu obrazu", HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> getImage(@PathVariable Long id) {
+        Optional<User> user = userInfoService.findById(id);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user);
+        }
+        return new ResponseEntity<>("Blad przy pobieraniu obrazu", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
     @PostMapping("/contact")
-    ResponseEntity <ContactForm> saveContactForm(@RequestBody ContactForm contactForm) {
+    ResponseEntity<ContactForm> saveContactForm(@RequestBody ContactForm contactForm) {
         contactForm.setDate(LocalDateTime.now());
         return contactFormService.addNewContactForm(contactForm);
     }
@@ -119,38 +110,22 @@ public class Controller {
         return user;
     }
 
-
     @PostMapping("/savePatient")
     public ResponseEntity hello(@RequestBody PatientDTO patient) {
-
-        if(patientRepository.existsByPESEL(patient.getPESEL())) {
-            userRepository.deleteById((long) (userRepository.findAll().size() - 1));
-            return new ResponseEntity("PESEL istnieje w bazie", HttpStatus.NOT_ACCEPTABLE);
+        if (patientService.existsByPesel(patient.getPESEL())) {
+            return new ResponseEntity<>("PESEL istnieje w bazie", HttpStatus.CONFLICT);
         }
-
+        User patientAccount = userRepository.findById(patient.getUserId()).orElseThrow(() -> new ApplicationException("No user found"));
         Patient patientEntity = new Patient();
-        patientEntity.setUser(sampleRepository.findById(patient.getUser_id()).orElse(null));
-        patientEntity.setCity(patient.getCity());
-        patientEntity.setName(patient.getName());
-        patientEntity.setHome_number(patient.getHome_number());
-        patientEntity.setPESEL(patient.getPESEL());
-        patientEntity.setPostal_code(patient.getPostal_code());
-        patientEntity.setStreet(patient.getStreet());
-        patientEntity.setLast_name(patient.getLast_name());
+        patientEntity.setUser(patientAccount);
+        patientService.createPatient(patient, patientEntity);
 
-        if(patientEntity.getUser() != null) {
-            patientRepository.save(patientEntity);
-
-            return new ResponseEntity<Patient>(patientEntity, HttpStatus.OK);
-        }
-        return new ResponseEntity("No matching user found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(patientEntity, HttpStatus.OK);
     }
 
-    @GetMapping(path ="/getPdf")
+    @GetMapping(path = "/getPdf")
     public ResponseEntity getPdfContent() throws Exception {
-
         writePdf.writePdf(visitRepository.findAll().get(0));
-
         ClassPathResource pdfFile = new ClassPathResource("examination.pdf");
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
@@ -159,25 +134,18 @@ public class Controller {
 
     @PostMapping(path = "/saveProcedure/{id}")
     public ResponseEntity saveProcedure(@RequestBody MedicalProcedures procedure) {
-
-        return new ResponseEntity(null, HttpStatus.NOT_FOUND);
-    }
-
-
-    @GetMapping("/findAll")
-    List<User> findAll() {
-        return sampleRepository.findAll();
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/getDoctorList")
-    ResponseEntity<List<Doctor>> getAll(){
-        return ResponseEntity.ok(doctorRepository.findAll());
+    public ResponseEntity<List<Doctor>> getAll() {
+        return ResponseEntity.ok(doctorUtilsService.findAllDoctors());
     }
 
     @GetMapping("/getImage/{id}")
-     org.springframework.http.ResponseEntity<byte[]> getUser(@PathVariable Long id){
-        return ResponseEntity.ok(Objects.requireNonNull(sampleRepository.findById(id).orElse(null)).getImage());
+    public ResponseEntity<Object> getUser(@PathVariable Long id) {
+        User userImage = userInfoService.findById(id).orElseThrow(() -> new ApplicationException("Error fetching data"));
+        return ResponseEntity.ok(Objects.requireNonNull(userImage).getImage());
     }
-
 
 }

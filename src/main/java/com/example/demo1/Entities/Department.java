@@ -1,4 +1,3 @@
-
 package com.example.demo1.Entities;
 
 import lombok.Getter;
@@ -15,7 +14,6 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id_column;
-
     String name;
     String openingHour;
     String closingHour;

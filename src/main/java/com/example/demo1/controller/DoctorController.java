@@ -1,23 +1,27 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.dto.DoctorDTO;
-import com.example.demo1.dto.UserDto;
-import com.example.demo1.dto.VisitDTO;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
 import com.example.demo1.Repositories.UserRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
+import com.example.demo1.Services.DoctorUtilsService;
+import com.example.demo1.dto.DoctorDTO;
+import com.example.demo1.dto.UserDTO;
+import com.example.demo1.dto.VisitDTO;
+import com.example.demo1.exception.ApplicationException;
+import com.example.demo1.utils.EntityUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
+
+import static com.example.demo1.Services.DoctorUtilsService.splitVisitsOnPendingAndHistory;
 
 @RestController
 @AllArgsConstructor
@@ -25,159 +29,101 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:4200")
 public class DoctorController {
 
-    @Autowired
-    private UserRepository sampleRepository;
+    private UserRepository userRepository;
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
     private VisitRepository visitRepository;
+    private DoctorUtilsService doctorUtilsService;
 
     @DeleteMapping("deletePatient/{id}")
-    ResponseEntity deleteDoctor(@PathVariable Long id) {
-        Patient patient = Objects.requireNonNull(patientRepository.findById(id).orElse(null));
+    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
+        patientRepository.deleteById(id);
 
-        patientRepository.deleteById(Objects.requireNonNull(patientRepository.findById(patient.getId())
-                .map(Patient::getId).orElse(null)));
-        return ResponseEntity.ok("Usunieto");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/getNumberOfPatients")
-    ResponseEntity getSize() {
+    public ResponseEntity<Integer> getSize() {
         return ResponseEntity.ok(patientRepository.findAll().size());
     }
 
     @PostMapping("/findByPESEL")
-    ResponseEntity findByPESEL(@RequestBody String PESEL) {
-        return ResponseEntity.ok(List.of(patientRepository.findByPESEL(PESEL).orElseThrow(null)));
+    public ResponseEntity<Patient> findByPESEL(@RequestBody String PESEL) {
+        Optional<Patient> patientByPesel = patientRepository.findByPESEL(PESEL);
+
+        return patientByPesel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getTodayVisits/{id}")
-    ResponseEntity getTodayVisits(@PathVariable Long id){
-
+    public ResponseEntity<Object> getTodayVisits(@PathVariable Long id) {
         Doctor doctor = doctorRepository.findById(id).orElse(null);
-
-        if(doctor != null) {
-            return ResponseEntity.ok(doctor.getGetPatientVisits().stream()
-                    .filter(e -> e.getStartDate().getDayOfMonth() == LocalDateTime.now().getDayOfMonth())
-                    .collect(Collectors.toList()));
+        if (doctor != null) {
+            return ResponseEntity.ok(DoctorUtilsService.getTodaysVisits(doctor));
         }
-
-        return new ResponseEntity("Nie znaleziono danego doktora ani jego wizyt", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Nie znaleziono danego doktora ani jego wizyt", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/editPatientProfile")
-    ResponseEntity editInfo(@RequestBody UserDto user) {
-        Patient edited = patientRepository.findById(user.getId()).orElse(null);
+    public ResponseEntity<Patient> editInfo(@RequestBody UserDTO user) {
+        Patient edited = patientRepository.findById(user.getId()).orElseThrow(() -> new ApplicationException("Error fetching user info"));
+        EntityUtils.updatePatientData(user, edited);
 
-        if(user.getFirstName() != null) {
-            edited.setName(user.getFirstName());
-            edited.setHome_number(user.getHomeNumber());
-            edited.setPESEL(user.getPESEL());
-            edited.setCity(user.getCity());
-            edited.setStreet(user.getStreet());
-            edited.setLast_name(user.getLastName());
-            edited.setPostal_code(user.getPostalCode());
-            patientRepository.save(edited);
+        return ResponseEntity.ok(patientRepository.save(edited));
+    }
+
+    @PutMapping("/editVisit/{id}")
+    public ResponseEntity<MedicalVisit> editVisitInfo(@PathVariable Long id, @RequestBody VisitDTO visitDTO) {
+        MedicalVisit visit = visitRepository.findById(id).orElseThrow(() -> new ApplicationException("Error fetching user "));
+        visit.setPaid(visitDTO.getIsPaid() != null ? visitDTO.getIsPaid() : visit.isPaid());
+        visit.setDescription(visitDTO.getDescription() != null ? visitDTO.getDescription() : visit.getDescription());
+        visit.setHasTookPlace(visitDTO.getHasTookPlace() != null ? visitDTO.getHasTookPlace() : visit.isHasTookPlace());
+
+        return ResponseEntity.ok(visitRepository.save(visit));
+    }
+
+    @PutMapping("/editProfile")
+    public ResponseEntity<User> editInfo(@RequestBody DoctorDTO user) {
+        User edited = userRepository.findById(user.getId()).orElseThrow(() -> new ApplicationException("Trouble fetching session"));
+        if (edited != null) {
+            edited.getDoctor().setName(user.getFirstName() != null ? user.getFirstName() : edited.getDoctor().getName());
+            edited.getDoctor().setLastName(user.getLastName() != null ? user.getLastName() : edited.getDoctor().getLastName());
         }
-
+        userRepository.save(edited);
         return ResponseEntity.ok(edited);
     }
 
-
-    @PutMapping("/editVisit/{id}")
-    ResponseEntity editVisitInfo(@PathVariable Long id, @RequestBody VisitDTO visitDTO) {
-
-        MedicalVisit visit = visitRepository.findById(id).orElse(null);
-
-        if(visit != null) {
-            visit.setPaid(visitDTO.getIsPaid());
-            visit.setDescription(visitDTO.getDescription());
-            visit.setHasTookPlace(visitDTO.getHasTookPlace());
-
-            return ResponseEntity.ok(visitRepository.save(visit));
-        }
-
-        return new ResponseEntity("Wizytya nie istnieje", HttpStatus.NOT_FOUND);
-    }
-    @PutMapping("/editProfile")
-    ResponseEntity editInfo(@RequestBody DoctorDTO user) {
-        User edited = sampleRepository.findById(user.getId()).orElse(null);
-      if (user.getFirstName() != null)
-                edited.getDoctor().setName(user.getFirstName());
-        if(user.getLastName() != null)
-                edited.getDoctor().setLastName(user.getLastName());
-
-        sampleRepository.save(edited);
-
-       return ResponseEntity.ok(edited);
-
-    }
-
     @PutMapping("editPatient/{id}")
-    ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {
+    public ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {
         Doctor doctorToDelete = doctorRepository.findById(id.longValue()).orElseThrow();
         doctorRepository.delete(doctorToDelete);
+
         return ResponseEntity.ok(doctorToDelete);
     }
 
     @PutMapping("edit/{id}")
-    ResponseEntity<Doctor> updateDoctorInfo(@RequestBody Doctor doctorToEdit, @PathVariable Integer id, @RequestParam String attributeToChange) {
-
+    public ResponseEntity<Doctor> updateDoctorInfo(@RequestBody Doctor doctorToEdit, @PathVariable Integer id, @RequestParam String attributeToChange) {
         return ResponseEntity.ok(doctorToEdit);
     }
 
     @GetMapping("/pendingVisits/{id}")
-    ResponseEntity getPendingVisits(@PathVariable Long id,  @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "3") int size)
-    {
-        page--;
-        Doctor doctor = doctorRepository.findById(id).orElse(null);
-        List<MedicalVisit> pending = new ArrayList<>();
-        List<MedicalVisit> history = new ArrayList<>();
-        boolean hasAnyPending = false;
-        if (doctor != null) {
-
-            List<MedicalVisit> sortedByDate = doctor.getGetPatientVisits()
-                    .stream()
-                    .sorted(Comparator.comparing(MedicalVisit::getStartDate))
-                    .collect(Collectors.toList());
-
-            for (int i = 0; i < sortedByDate.size(); i++) {
-                if (sortedByDate.get(i).getStartDate().compareTo(LocalDateTime.now()) > 0) {
-                    history = sortedByDate.subList(0, i);
-                    pending = sortedByDate.subList(i, sortedByDate.size());
-                    hasAnyPending = true;
-                    break;
-                }
-            }
-
-            if (!hasAnyPending) {
-                history = sortedByDate;
-            }
-
-            TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
-                visitData.put("Oczekujace", pending);
-                visitData.put("Historia", history);
-
-
-            return ResponseEntity.ok(visitData);
+    public ResponseEntity<Object> getPendingVisits(@PathVariable Long id, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "3") int size) {
+        Optional<Doctor> doctor = doctorRepository.findById(id);
+        TreeMap<String, List<MedicalVisit>> visitData = new TreeMap<>();
+        if(doctor.isPresent()) {
+            visitData = splitVisitsOnPendingAndHistory(doctor.get());
         }
-
-        return new ResponseEntity("Doctor not found", HttpStatus.NOT_FOUND);
+        return ResponseEntity.ok(visitData);
     }
 
-
     @GetMapping("/getVisit/{id}")
-    ResponseEntity getVisitToEdition(@PathVariable Long id) {
-
+    public ResponseEntity<Object> getVisitToEdition(@PathVariable Long id) {
         MedicalVisit visit = visitRepository.findById(id).orElse(null);
-
-        if(visit != null) {
+        if (visit != null) {
             return ResponseEntity.ok(visit);
         }
 
-        return new ResponseEntity("Visit not found", HttpStatus.NOT_FOUND);
-
+        return new ResponseEntity<>("Visit not found", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/getPatient/{id}")
@@ -186,38 +132,32 @@ public class DoctorController {
     }
 
     @GetMapping("/contactForm")
-    ResponseEntity<List<ContactForm>> getAllContactForms() {
+    public ResponseEntity<List<ContactForm>> getAllContactForms() {
         return contactFormService.getAllForms();
     }
 
     @GetMapping("/contactForms")
-    ResponseEntity getAllContactForms(@RequestParam ("today") String displayTodayString) {
-        if(displayTodayString.equals("today")) {
+    public ResponseEntity getAllContactForms(@RequestParam("today") String displayTodayString) {
+        if (displayTodayString.equals("today")) {
             return contactFormService.getTodayForms();
         }
 
-        return (ResponseEntity) ResponseEntity.badRequest();
+        return ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping("/abandonVisit/{id}")
-    ResponseEntity deleteVisit(@PathVariable Long id) {
-       MedicalVisit visit =  visitRepository.findById(id).orElse(null);
-
-        if(visit == null) {
-            return new ResponseEntity("Visit not found", HttpStatus.NOT_FOUND);
-        } else {
-            visitRepository.delete(visit);
-
-            return ResponseEntity.ok("Visit has been deleted");
+    public ResponseEntity<Object> deleteVisit(@PathVariable Long id) {
+        Optional<MedicalVisit> visit = visitRepository.findById(id);
+        if (visit.isEmpty()) {
+            return new ResponseEntity<>("Visit not found", HttpStatus.NOT_FOUND);
         }
+        visitRepository.delete(visit.get());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/getAbandoned")
-    ResponseEntity deleteRequests() {
-
-        return ResponseEntity.ok(visitRepository.findAll().stream()
-                .filter(MedicalVisit::isDeleteRequest)
-                .collect(Collectors.toList()));
+    public ResponseEntity<List<MedicalVisit>> deleteRequests() {
+        return ResponseEntity.ok(doctorUtilsService.getAbandonedVisits());
     }
 
 }

@@ -11,16 +11,16 @@ import javax.persistence.*;
 @Entity
 public class WorkSchedule {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String startHour;
+    private String endHour;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "doctor_id")
     Doctor doctor;
 
-    private String startHour;
-    private String endHour;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
 }

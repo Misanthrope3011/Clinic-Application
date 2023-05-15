@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RateDto {
+public class RateDTO {
     private Long rateId;
     private Double rate;
-    private Long patient_id;
-    private Long doctor_id;
+    private Long patientId;
+    private Long doctorId;
 
 }
 

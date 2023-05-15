@@ -1,19 +1,19 @@
 package com.example.demo1.JWT;
 
-import java.util.Date;
-
 import com.example.demo1.Entities.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.*;
+import java.util.Date;
 
 @Component
+@Slf4j
 public class JWToken {
-    private static final Logger logger = LoggerFactory.getLogger(JWToken.class);
 
     @Value("${app.jwtSecret}")
     private String jwtSecret;
@@ -42,7 +42,7 @@ public class JWToken {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
+            log.error("Invalid JWT signature: {}", e.getMessage());
         }
 
         return false;

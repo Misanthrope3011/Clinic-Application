@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -28,7 +27,7 @@ public class MedicalProcedures {
     private String description;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "medicalProcedure")
+    @OneToMany(mappedBy = "procedure")
     private List<MedicalVisit> visitForProcedure;
 
     @JsonIgnore

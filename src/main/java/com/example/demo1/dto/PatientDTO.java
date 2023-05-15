@@ -10,11 +10,11 @@ import lombok.Setter;
 public class PatientDTO {
     Long id;
     private String name;
-    private String last_name;
+    private String lastName;
     private String PESEL;
     private String city;
     private String street;
-    private String home_number;
-    private String postal_code;
-    private Long user_id;
+    private String homeNumber;
+    private String postalCode;
+    private Long userId;
 }

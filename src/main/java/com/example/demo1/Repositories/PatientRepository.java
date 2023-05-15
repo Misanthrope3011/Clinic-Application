@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PatientRepository extends JpaRepository<Patient, Long>, CrudRepository<Patient,Long> {
+public interface PatientRepository extends JpaRepository<Patient, Long>, CrudRepository<Patient, Long> {
 
     Optional<Patient> findByPESEL(String PESEL);
     Boolean existsByPESEL(String PESEL);
     Page<Patient> findAll(Pageable pageable);
+
 }

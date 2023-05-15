@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserDto {
+public class UserDTO {
+
     private Long id;
     private String firstName;
     private String lastName;
@@ -16,4 +17,5 @@ public class UserDto {
     private String homeNumber;
     private String postalCode;
     private String PESEL;
+
 }

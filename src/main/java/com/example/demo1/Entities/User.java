@@ -6,13 +6,17 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
-@Entity
+@Entity(name = "usr_account")
 @Getter
 @Setter
 public class User implements UserDetails {
@@ -32,17 +36,19 @@ public class User implements UserDetails {
     @Size(min = 5, max = 30, message = "Email must have at least 5 characters and maximum 30 characters")
     private String email;
 
-    @OneToOne (fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Patient patient;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Doctor doctor;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(	name = "user_roles",
+    @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+    @Lob
+    private byte[] image;
 
     public User(User user) {
         this.email = user.email;
@@ -55,10 +61,10 @@ public class User implements UserDetails {
         this.userRole = user.userRole;
     }
 
+
     public User() {
         super();
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -97,8 +103,5 @@ public class User implements UserDetails {
     public String getUsername() {
         return username;
     }
-
-    @Lob
-    private byte[] image;
 
 }

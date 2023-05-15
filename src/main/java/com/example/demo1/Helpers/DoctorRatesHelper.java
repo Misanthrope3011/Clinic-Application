@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 public class DoctorRatesHelper {
 
 
-    public List<Double> getDoctorAverageRates(List <Doctor> doctor) {
+    public List<Double> getDoctorAverageRates(List<Doctor> doctor) {
         List<Double> allRatings = new ArrayList<>();
 
         doctor.forEach(e -> allRatings.add(e.getDoctorRatings()

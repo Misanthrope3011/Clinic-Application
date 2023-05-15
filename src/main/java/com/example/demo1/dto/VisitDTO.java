@@ -10,13 +10,15 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 public class VisitDTO {
+
     private Long id;
-    private Long id_procedure;
-    private Long patient_id;
-    private Long doctor_id;
+    private Long idProcedure;
+    private Long patient;
+    private Long doctor;
     private String visit_start;
     private Date day;
     private String description;
     private Boolean isPaid;
     private Boolean hasTookPlace;
+
 }

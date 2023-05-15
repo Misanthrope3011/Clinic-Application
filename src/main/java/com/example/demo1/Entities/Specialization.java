@@ -1,4 +1,3 @@
-
 package com.example.demo1.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,17 +14,16 @@ public class Specialization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String specializationName;
+    private Long id;
+    private String specializationName;
 
     @JsonIgnore
     @OneToMany(mappedBy = "doctorSpecialization")
-    List<Doctor> doctorId;
+    private List<Doctor> doctorId;
 
 
     @OneToMany(mappedBy = "specialization")
-    List<MedicalProcedures> procedures;
-
+    private List<MedicalProcedures> procedures;
 
 
 }

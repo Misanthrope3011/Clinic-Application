@@ -9,8 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DoctorDTO {
 
-    Long id;
-    String firstName;
-    String lastName;
+    private Long id;
+    private String firstName;
+    private String lastName;
 
 }

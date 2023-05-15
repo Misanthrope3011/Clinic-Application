@@ -18,13 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final DoctorUtilsService docktorUtilsService;
+    private final DoctorUtilsService doctorUtilsService;
     private final NewsService newsService;
     private final ContactFormService contactFormService;
 
     @PostMapping("/addNews")
     public ResponseEntity<News> entity(@RequestBody News news) {
-
         return ResponseEntity.ok(newsService.createNews(news));
     }
 
@@ -36,7 +35,7 @@ public class AdminController {
 
     @GetMapping("/findAllDoctors")
     public ResponseEntity<List<Doctor>> findAll() {
-        return ResponseEntity.ok(docktorUtilsService.findAllDoctors());
+        return ResponseEntity.ok(doctorUtilsService.findAllDoctors());
     }
 
 }

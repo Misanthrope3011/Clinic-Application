@@ -15,30 +15,30 @@ public class Doctor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String name;
-    String lastName;
+    private String name;
+    private String lastName;
 
     @JsonIgnore
     @JoinColumn(name = "deparment_id")
     @ManyToOne
-    Department doctorDepartment;
+    private Department doctorDepartment;
 
     @ManyToOne
     @JoinColumn(name = "specialization_id", referencedColumnName = "id")
-    Specialization doctorSpecialization;
+    private Specialization doctorSpecialization;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "doctorId", cascade = CascadeType.ALL)
-    List<MedicalVisit> getPatientVisits;
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private List<MedicalVisit> getPatientVisits;
 
     @OneToMany(mappedBy = "doctor")
-    List <DoctorRatings> doctorRatings;
+    private List<DoctorRatings> doctorRatings;
 
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
-    List<WorkSchedule> workSchedule;
+    private List<WorkSchedule> workSchedule;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)

@@ -1,15 +1,7 @@
 package com.example.demo1.JWT;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.example.demo1.Services.UserDetailService;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +12,20 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @NoArgsConstructor
 public class JWTAuth extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JWTAuth.class);
     private JWToken token;
     private UserDetailService userDetailsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(JWTAuth.class);
-
-   @Override
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
         try {

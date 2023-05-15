@@ -4,6 +4,8 @@ package com.example.demo1.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -15,13 +17,12 @@ import java.util.List;
 @Entity
 public class Patient {
 
-    public Patient() {
-        super();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Size(min = 7, max = 10, message = "Phone numbers has fixed lengths and can have minimum 7 digits an maximum 10 digits")
+    String phone;
 
     @NotBlank
     @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 charakters")
@@ -29,9 +30,10 @@ public class Patient {
 
     @NotBlank
     @Size(min = 5, max = 30, message = "Minimum 5 characters, max 30 charakters")
-    private String last_name;
+    private String lastName;
 
     @NotBlank
+    @UniqueElements
     @Pattern(regexp = "^[0-9]{11}", message = "PESEL consists of 11 digits")
     @Column(unique = true)
     private String PESEL;
@@ -43,27 +45,13 @@ public class Patient {
     private String street;
 
     @Size(min = 1, max = 5, message = "Minimum 1 character, max 5 characters")
-    private String home_number;
+    private String homeNumber;
 
     @Pattern(regexp = "^[0-9]{2}[-][0-9]{3}$", message = "Postal code has xx-xxx format")
-    private String postal_code;
-
-    @Size(min = 7, max = 10, message = "Phone numbers has fixed lengths and can have minimum 7 digits an maximum 10 digits")
-    String phone;
-
-    public Patient(Long id, String name, String last_name, String PESEL, String city, String street, String home_number, String postal_code, User user) {
-        this.id = id;
-        this.name = name;
-        this.last_name = last_name;
-        this.PESEL = PESEL;
-        this.city = city;
-        this.street = street;
-        this.home_number = home_number;
-        this.postal_code = postal_code;
-    }
+    private String postalCode;
 
     @JsonIgnore
-    @OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "my_id", referencedColumnName = "id")
     private User user;
 
@@ -71,7 +59,22 @@ public class Patient {
     private List<DoctorRatings> getRatingsByPatient;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "patientId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MedicalVisit> visits;
+
+    public Patient() {
+        super();
+    }
+
+    public Patient(Long id, String name, String lastName, String PESEL, String city, String street, String homeNumber, String postalCode, User user) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.PESEL = PESEL;
+        this.city = city;
+        this.street = street;
+        this.homeNumber = homeNumber;
+        this.postalCode = postalCode;
+    }
 
 }

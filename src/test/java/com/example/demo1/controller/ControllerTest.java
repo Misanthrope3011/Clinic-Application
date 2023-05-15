@@ -32,7 +32,7 @@ public class ControllerTest {
     @Test
     public void shouldReturnDefaultMessage() throws Exception {
         String value = objectMapper.writeValueAsString(restTemplate.findAll());
-         this.mockMvc.perform(get("/home")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/home")).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().json(value));
     }
 }

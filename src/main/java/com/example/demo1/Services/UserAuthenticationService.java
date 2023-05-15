@@ -8,8 +8,8 @@ import com.example.demo1.JWT.JWToken;
 import com.example.demo1.Prototypes.Credentials;
 import com.example.demo1.Prototypes.LoginResponse;
 import com.example.demo1.Repositories.RoleRepository;
-import com.example.demo1.Repositories.UserRepository;
 import com.example.demo1.Repositories.TokenRepository;
+import com.example.demo1.Repositories.UserRepository;
 import com.example.demo1.exception.ApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +42,9 @@ public class UserAuthenticationService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = token.generateJwtToken(authentication);
-
         User userDetails = (User) authentication.getPrincipal();
-        List<String> userRoles =  collectRoles(userDetails);
+        List<String> userRoles = collectRoles(userDetails);
+
         return getRoleBasedResponse(jwt, userDetails, userRoles);
     }
 
@@ -52,7 +52,7 @@ public class UserAuthenticationService {
         User user = new User(signUpRequest);
         user.setEncodedPassword(encoder.encode(signUpRequest.getPassword()));
         user.setUsername(signUpRequest.getEmail());
-        assignRoleToUser(user);
+        createUser(user);
         createUserToken(user);
 
         return user;
@@ -88,7 +88,7 @@ public class UserAuthenticationService {
         return ResponseEntity.badRequest().body("User has no matching role");
     }
 
-    private User assignRoleToUser(User user) {
+    private void createUser(User user) {
         String strRoles = String.valueOf(user.getUserRole());
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(UserRole.ROLE_PATIENT)
@@ -112,8 +112,7 @@ public class UserAuthenticationService {
                     throw new ApplicationException("No role provided");
             }
         }
-        return userRepository.save(user);
-
+        userRepository.save(user);
     }
 
     public String createUserToken(User user) {
@@ -124,4 +123,7 @@ public class UserAuthenticationService {
         return token;
     }
 
+    public VerificationToken findByToken(String token) {
+        return tokenRepository.findByToken(token);
+    }
 }
