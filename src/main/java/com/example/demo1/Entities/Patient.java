@@ -33,7 +33,6 @@ public class Patient {
     private String lastName;
 
     @NotBlank
-    @UniqueElements
     @Pattern(regexp = "^[0-9]{11}", message = "PESEL consists of 11 digits")
     @Column(unique = true)
     private String PESEL;

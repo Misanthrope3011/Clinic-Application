@@ -50,7 +50,7 @@ public class UserAuthenticationService {
 
     public User createUserFromRequest(User signUpRequest) {
         User user = new User(signUpRequest);
-        user.setEncodedPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setUsername(signUpRequest.getEmail());
         createUser(user);
         createUserToken(user);

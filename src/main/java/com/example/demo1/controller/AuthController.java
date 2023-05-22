@@ -42,12 +42,12 @@ public class AuthController {
 
         if (signUpRequest.getEmail() != null) {
             User requestUser = userAuthenticationService.createUserFromRequest(signUpRequest);
-            String token = userAuthenticationService.createUserToken(requestUser);
+            String token = userAuthenticationService.createUserToken(requestUser);/* STAGE 2
             String REGISTER_MAIL_SUBJECT_TEXT = "Rejestracja konta w przychodni";
             String REGISTER_SUBJECT_BODY = "Dziekujęmy za aktywowanie" +
                     "konta w naszej klinice. Aby aktywowac konto \n" +
                     "<a href = http://localhost:8080/signUp?token=" + token + "> kliknij tutaj </a>";
-            sender.sendMail(signUpRequest.getEmail(), REGISTER_MAIL_SUBJECT_TEXT, REGISTER_SUBJECT_BODY);
+            sender.sendMail(signUpRequest.getEmail(), REGISTER_MAIL_SUBJECT_TEXT, REGISTER_SUBJECT_BODY);*/
             return ResponseEntity.ok(userDetailService.loadUserByUsername(requestUser.getEmail()));
         }
         return new ResponseEntity<>("Zly email", HttpStatus.NOT_ACCEPTABLE);
