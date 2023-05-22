@@ -26,7 +26,7 @@ public class User implements UserDetails {
     private Long id;
 
     private String username;
-    private String encodedPassword;
+    private String password;
     private String signUpDate;
     private UserRole userRole;
     private boolean isExpired;
@@ -53,7 +53,7 @@ public class User implements UserDetails {
     public User(User user) {
         this.email = user.email;
         this.isActive = user.isActive;
-        this.encodedPassword = user.encodedPassword;
+        this.password = user.password;
         this.signUpDate = user.signUpDate;
         this.username = user.username;
         this.isExpired = user.isExpired;
@@ -76,7 +76,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return encodedPassword;
+        return password;
     }
 
     @Override

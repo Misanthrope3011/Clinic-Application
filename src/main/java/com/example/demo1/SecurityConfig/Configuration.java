@@ -61,14 +61,13 @@ public class Configuration extends WebSecurityConfigurerAdapter implements WebMv
         return new JWTAuth();
     }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/allowCors").allowedOrigins("http://localhost:4200/**");
-            }
-        };
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://192.168.0.126:4200")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedHeaders("HTTP/1.1 200 OK", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Authorization", "X-Requested-With", "requestId", "Correlation-Id")
+                .allowCredentials(true);
     }
 
     @Override
