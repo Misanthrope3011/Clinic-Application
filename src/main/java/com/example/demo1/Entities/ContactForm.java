@@ -24,4 +24,5 @@ public class ContactForm {
     private String email;
     private String content;
     private LocalDateTime date;
+
 }

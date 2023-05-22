@@ -1,0 +1,40 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 25
+    username: user  # paste your user
+    password: password  # paste your password
+    properties:
+      mail:
+        debug: true
+        transport:
+          protocol: smtp
+          smtp:
+            auth: true
+            connectiontimeout: 100000
+            timeout: 100000
+            writetimeout: 100000
+            ssl:
+              trust: smtp.gmail.com
+            starttls:
+              enable: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/clinic
+    username: clm
+    password: clm
+    driver-class-name: org.postgresql.Driver
+app:
+  jwtSecret: securityKey
+  jwtExpirationMs: 360000
+debug: true
+server:
+  port: 8083

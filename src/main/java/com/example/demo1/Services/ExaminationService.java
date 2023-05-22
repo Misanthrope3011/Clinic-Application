@@ -2,7 +2,7 @@ package com.example.demo1.Services;
 
 
 import com.example.demo1.Entities.MedicalProcedures;
-import com.example.demo1.Repositories.MedicalProcedure;
+import com.example.demo1.Repositories.MedicalProcedureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ExaminationService {
 
-    private MedicalProcedure medicalProceduresRepository;
+    private MedicalProcedureRepository medicalProceduresRepository;
     private HashMap<String, Double> examinations;
 
     public ExaminationService() {
@@ -33,7 +33,7 @@ public class ExaminationService {
     }
 
     @Autowired
-    public void setMedicalProceduresRepository(MedicalProcedure medicalProceduresRepository) {
+    public void setMedicalProceduresRepository(MedicalProcedureRepository medicalProceduresRepository) {
         this.medicalProceduresRepository = medicalProceduresRepository;
     }
 

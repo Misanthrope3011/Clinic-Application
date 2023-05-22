@@ -31,12 +31,9 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:4200")
 public class Controller {
 
-    private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private ExaminationService examinationService;
     private SpecializationRepository specializationRepository;
-    private UserRepository userRepository;
-    private MedicalProcedure medicalProcedure;
     private VisitRepository visitRepository;
     private PDFWriter writePdf;
     private DoctorUtilsService doctorUtilsService;
@@ -57,9 +54,9 @@ public class Controller {
 
     @PostMapping("/fileUpload/{id}")
     public ResponseEntity<Object> file(@RequestBody byte[] image, @PathVariable Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ApplicationException("Error fetching user"));
+        User user = userInfoService.findById(id).orElseThrow(() -> new ApplicationException("Error fetching user"));
         user.setImage(image);
-        userRepository.save(user);
+        userInfoService.saveUser(user);
 
         return ResponseEntity.ok(image);
     }
@@ -115,7 +112,7 @@ public class Controller {
         if (patientService.existsByPesel(patient.getPESEL())) {
             return new ResponseEntity<>("PESEL istnieje w bazie", HttpStatus.CONFLICT);
         }
-        User patientAccount = userRepository.findById(patient.getUserId()).orElseThrow(() -> new ApplicationException("No user found"));
+        User patientAccount = userInfoService.findById(patient.getUserId()).orElseThrow(() -> new ApplicationException("No user found"));
         Patient patientEntity = new Patient();
         patientEntity.setUser(patientAccount);
         patientService.createPatient(patient, patientEntity);

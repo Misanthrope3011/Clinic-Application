@@ -24,5 +24,8 @@ public class UserInfoService {
     public List<User> findAllUsers() {
         return sampleRepository.findAll();
     }
+    public User saveUser(User userToSave) {
+        return sampleRepository.save(userToSave);
+    }
 
 }
