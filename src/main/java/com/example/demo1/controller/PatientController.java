@@ -1,12 +1,12 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Entities.*;
-import com.example.demo1.Enums.UserRole;
-import com.example.demo1.Helpers.DoctorRatesHelper;
-import com.example.demo1.Helpers.VisitManagementHelper;
-import com.example.demo1.Prototypes.LoginResponse;
-import com.example.demo1.Repositories.*;
-import com.example.demo1.Services.DoctorUtilsService;
+import com.example.demo1.entity.*;
+import com.example.demo1.enums.UserRole;
+import com.example.demo1.helpers.DoctorRatesHelper;
+import com.example.demo1.helpers.VisitManagementHelper;
+import com.example.demo1.prototype.LoginResponse;
+import com.example.demo1.repository.*;
+import com.example.demo1.service.DoctorUtilsService;
 import com.example.demo1.dto.RateDTO;
 import com.example.demo1.dto.UserDTO;
 import com.example.demo1.dto.VisitDTO;
@@ -126,7 +126,7 @@ public class PatientController {
         return ResponseEntity.ok(ratesHelper.getDoctorAverageRates(doctor));
     }
 
-    @GetMapping("/getUserRates/{id}")
+    @GetMapping("{id}/rates")
     private ResponseEntity getRates(@PathVariable Long id) {
         Patient patient = patientRepository.findById(id).orElse(null);
         if (patient == null) {
