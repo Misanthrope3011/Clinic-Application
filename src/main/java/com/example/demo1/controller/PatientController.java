@@ -34,7 +34,7 @@ public class PatientController {
     private PatientRepository patientRepository;
     private UserRepository sampleRepository;
     private VisitRepository medicalVisitRepository;
-    private MedicalProcedure medicalProcedure;
+    private MedicalProcedureRepository medicalProcedure;
     private DoctorRepository doctorRepository;
     private RatesRepository ratesRepository;
     private VisitManagementHelper managementHelper;
@@ -189,7 +189,6 @@ public class PatientController {
 
     @PutMapping("updateRate/{id}")
     private ResponseEntity editInfo(@PathVariable Long id, @RequestBody RateDTO rate) {
-
         DoctorRatings rateToUpdate = ratesRepository.findById(id).orElse(null);
 
         if (rateToUpdate == null) {

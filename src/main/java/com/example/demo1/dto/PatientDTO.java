@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PatientDTO {
+
     Long id;
     private String name;
     private String lastName;
@@ -17,4 +18,5 @@ public class PatientDTO {
     private String homeNumber;
     private String postalCode;
     private Long userId;
+
 }

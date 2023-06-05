@@ -3,10 +3,10 @@ package com.example.demo1.controller;
 import com.example.demo1.Entities.*;
 import com.example.demo1.Repositories.DoctorRepository;
 import com.example.demo1.Repositories.PatientRepository;
-import com.example.demo1.Repositories.UserRepository;
 import com.example.demo1.Repositories.VisitRepository;
 import com.example.demo1.Services.ContactFormService;
 import com.example.demo1.Services.DoctorUtilsService;
+import com.example.demo1.Services.UserInfoService;
 import com.example.demo1.dto.DoctorDTO;
 import com.example.demo1.dto.UserDTO;
 import com.example.demo1.dto.VisitDTO;
@@ -29,7 +29,7 @@ import static com.example.demo1.Services.DoctorUtilsService.splitVisitsOnPending
 @CrossOrigin(origins = "http://localhost:4200")
 public class DoctorController {
 
-    private UserRepository userRepository;
+    private UserInfoService userInfoService;
     private DoctorRepository doctorRepository;
     private ContactFormService contactFormService;
     private PatientRepository patientRepository;
@@ -57,7 +57,7 @@ public class DoctorController {
 
     @GetMapping("/getTodayVisits/{id}")
     public ResponseEntity<Object> getTodayVisits(@PathVariable Long id) {
-        Doctor doctor = doctorRepository.findById(id).orElse(null);
+        Doctor doctor = doctorUtilsService.findDoctorById(id).orElse(null);
         if (doctor != null) {
             return ResponseEntity.ok(DoctorUtilsService.getTodaysVisits(doctor));
         }
@@ -84,18 +84,18 @@ public class DoctorController {
 
     @PutMapping("/editProfile")
     public ResponseEntity<User> editInfo(@RequestBody DoctorDTO user) {
-        User edited = userRepository.findById(user.getId()).orElseThrow(() -> new ApplicationException("Trouble fetching session"));
+        User edited = userInfoService.findById(user.getId()).orElseThrow(() -> new ApplicationException("Trouble fetching session"));
         if (edited != null) {
             edited.getDoctor().setName(user.getFirstName() != null ? user.getFirstName() : edited.getDoctor().getName());
             edited.getDoctor().setLastName(user.getLastName() != null ? user.getLastName() : edited.getDoctor().getLastName());
         }
-        userRepository.save(edited);
+        userInfoService.saveUser(edited);
         return ResponseEntity.ok(edited);
     }
 
     @PutMapping("editPatient/{id}")
-    public ResponseEntity<Doctor> editDoctor(@PathVariable Integer id) {
-        Doctor doctorToDelete = doctorRepository.findById(id.longValue()).orElseThrow();
+    public ResponseEntity<Doctor> editDoctor(@PathVariable Long id) {
+        Doctor doctorToDelete = doctorUtilsService.findDoctorById(id).orElseThrow();
         doctorRepository.delete(doctorToDelete);
 
         return ResponseEntity.ok(doctorToDelete);

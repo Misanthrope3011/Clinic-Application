@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RateDTO {
+
     private Long rateId;
     private Double rate;
     private Long patientId;
