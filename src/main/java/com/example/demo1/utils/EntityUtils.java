@@ -1,8 +1,10 @@
 package com.example.demo1.utils;
 
-import com.example.demo1.Entities.Patient;
-import com.example.demo1.Entities.User;
+import com.example.demo1.entity.Patient;
+import com.example.demo1.entity.User;
 import com.example.demo1.dto.UserDTO;
+
+import static com.example.demo1.utils.CommonUtils.setIfNotNull;
 
 public class EntityUtils {
 

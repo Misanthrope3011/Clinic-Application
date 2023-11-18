@@ -1,12 +1,12 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Entities.*;
-import com.example.demo1.Repositories.DoctorRepository;
-import com.example.demo1.Repositories.PatientRepository;
-import com.example.demo1.Repositories.VisitRepository;
-import com.example.demo1.Services.ContactFormService;
-import com.example.demo1.Services.DoctorUtilsService;
-import com.example.demo1.Services.UserInfoService;
+import com.example.demo1.entity.*;
+import com.example.demo1.repository.DoctorRepository;
+import com.example.demo1.repository.PatientRepository;
+import com.example.demo1.repository.VisitRepository;
+import com.example.demo1.service.ContactFormService;
+import com.example.demo1.service.DoctorUtilsService;
+import com.example.demo1.service.UserInfoService;
 import com.example.demo1.dto.DoctorDTO;
 import com.example.demo1.dto.UserDTO;
 import com.example.demo1.dto.VisitDTO;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import static com.example.demo1.Services.DoctorUtilsService.splitVisitsOnPendingAndHistory;
+import static com.example.demo1.service.DoctorUtilsService.splitVisitsOnPendingAndHistory;
 
 @RestController
 @AllArgsConstructor
@@ -48,8 +48,8 @@ public class DoctorController {
         return ResponseEntity.ok(patientRepository.findAll().size());
     }
 
-    @PostMapping("/findByPESEL")
-    public ResponseEntity<Patient> findByPESEL(@RequestBody String PESEL) {
+    @PostMapping("/find/{PESEL}")
+    public ResponseEntity<Patient> findByPESEL(@PathVariable String PESEL) {
         Optional<Patient> patientByPesel = patientRepository.findByPESEL(PESEL);
 
         return patientByPesel.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

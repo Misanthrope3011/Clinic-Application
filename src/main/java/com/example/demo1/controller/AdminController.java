@@ -1,11 +1,11 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Entities.ContactForm;
-import com.example.demo1.Entities.Doctor;
-import com.example.demo1.Entities.News;
-import com.example.demo1.Services.ContactFormService;
-import com.example.demo1.Services.DoctorUtilsService;
-import com.example.demo1.Services.NewsService;
+import com.example.demo1.entity.ContactForm;
+import com.example.demo1.entity.Doctor;
+import com.example.demo1.entity.News;
+import com.example.demo1.service.ContactFormService;
+import com.example.demo1.service.DoctorUtilsService;
+import com.example.demo1.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,11 +1,11 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Entities.User;
-import com.example.demo1.Entities.VerificationToken;
-import com.example.demo1.Prototypes.Credentials;
-import com.example.demo1.Services.EmailSender;
-import com.example.demo1.Services.UserAuthenticationService;
-import com.example.demo1.Services.UserDetailService;
+import com.example.demo1.entity.User;
+import com.example.demo1.entity.VerificationToken;
+import com.example.demo1.prototype.Credentials;
+import com.example.demo1.service.EmailSender;
+import com.example.demo1.service.UserAuthenticationService;
+import com.example.demo1.service.UserDetailService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

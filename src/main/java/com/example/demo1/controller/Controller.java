@@ -1,9 +1,9 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Entities.*;
-import com.example.demo1.PDFGenerator.PDFWriter;
-import com.example.demo1.Repositories.*;
-import com.example.demo1.Services.*;
+import com.example.demo1.entity.*;
+import com.example.demo1.pdf.PDFWriter;
+import com.example.demo1.repository.*;
+import com.example.demo1.service.*;
 import com.example.demo1.dto.PatientDTO;
 import com.example.demo1.exception.ApplicationException;
 import lombok.AllArgsConstructor;

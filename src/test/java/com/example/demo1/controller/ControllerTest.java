@@ -1,6 +1,6 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.Repositories.UserRepository;
+import com.example.demo1.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
